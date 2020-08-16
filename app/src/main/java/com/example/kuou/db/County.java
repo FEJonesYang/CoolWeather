@@ -1,11 +1,13 @@
 package com.example.kuou.db;
 
+import org.litepal.crud.DataSupport;
+
 /**
  * @author JonesYang
  * @Data 2020-08-16
  * @Function 数据库表：县
  */
-public class County {
+public class County extends DataSupport {
 
     private int id;
     private String countyName;

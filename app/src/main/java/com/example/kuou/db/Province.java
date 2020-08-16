@@ -1,6 +1,12 @@
 package com.example.kuou.db;
 
+/**
+ * @author JonesYang
+ * @Data 2020-08-16
+ * @Function 数据库表：省
+ */
 public class Province {
+
     private int id;
     private String provinceName;
     private int provinceCode;

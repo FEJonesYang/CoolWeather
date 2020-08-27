@@ -52,8 +52,8 @@ public class AutoUpdateService extends Service {
      */
     private void updateWeather() {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        String weatherString = preferences.getString("weather",null);
-        if (weatherString != null){
+        String weatherString = preferences.getString("weather", null);
+        if (weatherString != null) {
             Weather weather = Utility.handleWeatherResponse(weatherString);
             String weatherId = weather.basic.weatherId;
 
@@ -68,10 +68,10 @@ public class AutoUpdateService extends Service {
                 public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
 
                     String responseText = response.body().string();
-                    Weather weather  = Utility.handleWeatherResponse(responseText);
-                    if (weather!= null && "ok".equals(weather.status)){
+                    Weather weather = Utility.handleWeatherResponse(responseText);
+                    if (weather != null && "ok".equals(weather.status)) {
                         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(AutoUpdateService.this).edit();
-                        editor.putString("weather",responseText);
+                        editor.putString("weather", responseText);
                         editor.apply();
                     }
 
@@ -99,7 +99,7 @@ public class AutoUpdateService extends Service {
 
                 String bingPic = response.body().string();
                 SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(AutoUpdateService.this).edit();
-                editor.putString("bing_pic",bingPic);
+                editor.putString("bing_pic", bingPic);
                 editor.apply();
             }
         });

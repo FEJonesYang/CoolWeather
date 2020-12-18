@@ -1,6 +1,7 @@
 package com.example.kuou.util;
 
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.example.kuou.db.City;
 import com.example.kuou.db.County;
@@ -22,21 +23,27 @@ import org.json.JSONObject;
 public class Utility {
     // 解析省级数据
     public static boolean handleProvinceResponse(String response) {
+        //使用 TextUtils.isEmpty(response) 可以在 response 为空时，避免发生 空指针异常
         if (!TextUtils.isEmpty(response)) {
             try {
+                // 所有的省级信息构成一个 JSONArray
                 JSONArray allProvinces = new JSONArray(response);
                 for (int i = 0; i < allProvinces.length(); i++) {
+                    //获取每一个省级的信息
                     JSONObject provinceObject = allProvinces.getJSONObject(i);
                     Province province = new Province();
                     province.setProvinceName(provinceObject.getString("name"));
                     province.setProvinceCode(provinceObject.getInt("id"));
+                    //保存到数据库中
                     province.save();
                 }
+                //如果解析成功
                 return true;
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
+        //没有解析成功
         return false;
     }
 
@@ -88,6 +95,7 @@ public class Utility {
     public static Weather handleWeatherResponse(String response){
 
         try {
+            //把获取的数据解析成 JSON
             JSONObject jsonObject = new JSONObject(response);
             JSONArray jsonArray = jsonObject.getJSONArray("HeWeather");
             String weatherContent = jsonArray.getJSONObject(0).toString();

@@ -1,7 +1,9 @@
-package com.example.kuou;
+package com.example.kuou.module.weather;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.core.view.GravityCompat;
+import androidx.databinding.DataBindingUtil;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -11,9 +13,12 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
 import android.view.View;
-import android.widget.Button;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -21,14 +26,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.kuou.R;
+import com.example.kuou.databinding.ActivityWeatherBinding;
 import com.example.kuou.gson.Forecast;
 import com.example.kuou.gson.Weather;
+import com.example.kuou.module.search.SearchCityActivity;
+import com.example.kuou.module.search.adapter.SearchCityRecycleViewAdapter;
+import com.example.kuou.module.search.model.SearchCityBean;
 import com.example.kuou.service.AutoUpdateService;
-import com.example.kuou.util.HttpUtil;
-import com.example.kuou.util.Utility;
+import com.example.kuou.common.net.HttpUtil;
+import com.example.kuou.common.json.Utility;
 
 import org.jetbrains.annotations.NotNull;
-import org.w3c.dom.Text;
 
 import java.io.IOException;
 
@@ -36,8 +45,9 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class WeatherActivity extends AppCompatActivity {
+public class WeatherActivity extends AppCompatActivity implements SearchCityRecycleViewAdapter.ISendSearchCityDataToWeatherActivityListener {
 
+    private static final String TAG = "WeatherActivity";
     private ScrollView weatherLayout;
 
     private TextView titleCity, titleUpdateTime, degreeText, weatherInfoText, aqiText, pm25text, comfortText, carWashText, sportText;
@@ -51,27 +61,34 @@ public class WeatherActivity extends AppCompatActivity {
 
     //滑动菜单
     public DrawerLayout drawerLayout;
-    private Button navButtoon;
+    private ImageView navMap;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        //处理屏幕的填充问题
-        if (Build.VERSION.SDK_INT >= 21) {
-            View decorView = getWindow().getDecorView();
-            decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
-            getWindow().setStatusBarColor(Color.TRANSPARENT);
+
+        // 5.0以上系统状态栏透明
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getWindow();
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(Color.TRANSPARENT);
         }
-        setContentView(R.layout.activity_weather);
+
+        super.onCreate(savedInstanceState);
+        ActivityWeatherBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_weather);
 
         //滑动菜单的逻辑处理
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        navButtoon = (Button) findViewById(R.id.nav_button);
-        navButtoon.setOnClickListener(new View.OnClickListener() {
+
+        //地图搜索功能
+        navMap = (ImageView) findViewById(R.id.nav_button);
+        navMap.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //打开滑动抽屉
-                drawerLayout.openDrawer(GravityCompat.START);
+                // TODO:地图业务
             }
         });
 
@@ -104,6 +121,7 @@ public class WeatherActivity extends AppCompatActivity {
         String bingPic = preferences.getString("bing_pic", null);
         if (bingPic != null) {
             //加载图片
+            loadBingPic();
             Glide.with(this).load(bingPic).into(bingPicImg);
         } else {
             //如果不存在图片的 url
@@ -130,6 +148,37 @@ public class WeatherActivity extends AppCompatActivity {
                 requestWeather(mWeatherId);
             }
         });
+
+        // TODO 标题栏选择更多按钮，有时间写一个自定义的View
+        binding.includeTitle.ivMoreChoose.setOnClickListener((view) -> {
+            //创建弹出式菜单对象（最低版本11）
+            PopupMenu popup = new PopupMenu(this, view);//第二个参数是绑定的那个view
+            //获取菜单填充器
+            MenuInflater inflater = popup.getMenuInflater();
+            //填充菜单
+            inflater.inflate(R.menu.pop_menu, popup.getMenu());
+            //绑定菜单项的点击事件
+            popup.setOnMenuItemClickListener((item) -> {
+                switch (item.getItemId()) {
+                    case R.id.search_city:
+                        Intent intent = new Intent(this, SearchCityActivity.class);
+                        startActivity(intent);
+                        break;
+                    case R.id.about_author:
+                        //打开滑动抽屉
+                        drawerLayout.openDrawer(GravityCompat.START);
+                        break;
+                }
+                return false;
+            });
+            //显示(这一行代码不要忘记了)
+            popup.show();
+
+        });
+
+        // 注册事件监听，在搜索城市获得数据之后，点击单个item需要获取数据
+        SearchCityRecycleViewAdapter.setISendSearchCityDataToWeatherActivityListener(this);
+
     }
 
 
@@ -143,7 +192,13 @@ public class WeatherActivity extends AppCompatActivity {
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 e.printStackTrace();
                 //加载失败
-                Toast.makeText(WeatherActivity.this, "加载壁纸出错", Toast.LENGTH_SHORT).show();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(WeatherActivity.this, "加载壁纸出错", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
             }
 
             @Override
@@ -172,7 +227,7 @@ public class WeatherActivity extends AppCompatActivity {
      */
     public void requestWeather(final String weatherId) {
 
-        String weatherUrl = "http://guolin.tech/api/weather?cityid=" + weatherId + "&key=6fe4402009a14e83b5649f2442e13bef";
+        String weatherUrl = "http://guolin.tech/api/weather?cityid=" + weatherId + "&key=575a4dd45c9f46ca833a259f953c76b3";
         HttpUtil.sendOkHttpRequest(weatherUrl, new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
@@ -264,4 +319,21 @@ public class WeatherActivity extends AppCompatActivity {
 
     }
 
+
+    /**
+     * 实现接口回调，搜索界面的数据传到这，可日志打印
+     *
+     * @param locationBean
+     */
+    @Override
+    public void postSearchCityData(SearchCityBean.LocationBean locationBean) {
+        Log.d(TAG, locationBean.toString());
+        Intent intent = new Intent(this, WeatherActivity.class);
+        startActivity(intent);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
 }

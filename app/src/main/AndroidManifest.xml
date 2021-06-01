@@ -4,6 +4,11 @@
     package="com.example.kuou">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
     <application
         android:name="org.litepal.LitePalApplication"
@@ -14,12 +19,33 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
+
+
+        <!--搜索城市-->
+        <activity
+            android:name=".module.search.SearchCityActivity"
+            android:launchMode="standard">
+            <intent-filter>
+                <action android:name="com.example.kuou.module.search.SearchCityActivity" />
+            </intent-filter>
+        </activity>
+
         <service
             android:name=".service.AutoUpdateService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
 
-        <activity android:name=".WeatherActivity" />
+        <!--天气显示的页面-->
+        <activity
+            android:name=".module.weather.WeatherActivity"
+            android:launchMode="standard">
+            <intent-filter>
+                <action android:name="com.example.kuou.module.weather.WeatherActivity" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <!--应用启动的主界面-->
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

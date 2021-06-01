@@ -1,20 +1,22 @@
-package com.example.kuou.model;
+package com.example.kuou.module.weather.model;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * @author JonesYang
  * @Data 2021-04-13
- * @Function 今日天气数据实体
+ * @Function 当天空气质量数据实体
  */
 
-public class NowResponse {
+public class AirNowResponse {
+
 
     /**
      * code : 200
-     * updateTime : 2020-07-15T08:51+08:00
+     * updateTime : 2021-05-30T08:47+08:00
      * fxLink : http://hfx.link/2ax1
-     * now : {"obsTime":"2020-07-15T07:35+08:00","temp":"27","feelsLike":"29","icon":"100","text":"晴","wind360":"209","windDir":"西南风","windScale":"1","windSpeed":"4","humidity":"67","precip":"0.0","pressure":"1001","vis":"11","cloud":"0","dew":"20"}
+     * now : {"obsTime":"2021-05-30T08:32+08:00","temp":"19","feelsLike":"18","icon":"100","text":"晴","wind360":"45","windDir":"东北风","windScale":"2","windSpeed":"9","humidity":"58","precip":"0.0","pressure":"1004","vis":"18","cloud":"91","dew":"13"}
      * refer : {"sources":["Weather China"],"license":["no commercial use"]}
      */
 
@@ -64,23 +66,23 @@ public class NowResponse {
         this.refer = refer;
     }
 
-    public static class NowBean {
+    public static class NowBean implements Serializable {
         /**
-         * obsTime : 2020-07-15T07:35+08:00
-         * temp : 27
-         * feelsLike : 29
+         * obsTime : 2021-05-30T08:32+08:00
+         * temp : 19
+         * feelsLike : 18
          * icon : 100
          * text : 晴
-         * wind360 : 209
-         * windDir : 西南风
-         * windScale : 1
-         * windSpeed : 4
-         * humidity : 67
+         * wind360 : 45
+         * windDir : 东北风
+         * windScale : 2
+         * windSpeed : 9
+         * humidity : 58
          * precip : 0.0
-         * pressure : 1001
-         * vis : 11
-         * cloud : 0
-         * dew : 20
+         * pressure : 1004
+         * vis : 18
+         * cloud : 91
+         * dew : 13
          */
 
         private String obsTime;
@@ -220,7 +222,7 @@ public class NowResponse {
         }
     }
 
-    public static class ReferBean {
+    public static class ReferBean implements Serializable {
         private List<String> sources;
         private List<String> license;
 
@@ -241,5 +243,6 @@ public class NowResponse {
         }
     }
 }
+
 
 

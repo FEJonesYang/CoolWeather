@@ -1,11 +1,11 @@
-package com.example.kuou.model;
+package com.example.kuou.module.weather.model;
 
 import java.util.List;
 
 /**
  * @author JonesYang
  * @Data 2021-04-13
- * @Function 生活指数
+ * @Function 生活质量指数
  */
 
 public class LifestyleResponse {

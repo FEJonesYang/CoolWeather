@@ -26,6 +26,13 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
+    // 视图数据绑定
+    dataBinding {
+        enabled = true
+    }
+
+
 }
 
 dependencies {
@@ -41,4 +48,5 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'
     implementation 'org.litepal.android:java:3.0.0'
+    implementation files('libs/QWeather_Public_Android_V4.4.jar')
 }

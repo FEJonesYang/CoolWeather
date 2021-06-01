@@ -1,4 +1,4 @@
-package com.example.kuou.util;
+package com.example.kuou.common.json;
 
 import android.text.TextUtils;
 import android.util.Log;
@@ -9,9 +9,13 @@ import com.example.kuou.db.Province;
 import com.example.kuou.gson.Weather;
 import com.google.gson.Gson;
 
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import okhttp3.Response;
 
 /**
  * @author JonesYang
@@ -91,18 +95,25 @@ public class Utility {
 
     /**
      * 返回的JSON解析成Weather实体类
-     * */
-    public static Weather handleWeatherResponse(String response){
+     */
+    @Deprecated
+    public static Weather handleWeatherResponse(String response) {
 
         try {
             //把获取的数据解析成 JSON
             JSONObject jsonObject = new JSONObject(response);
             JSONArray jsonArray = jsonObject.getJSONArray("HeWeather");
             String weatherContent = jsonArray.getJSONObject(0).toString();
-            return new Gson().fromJson(weatherContent,Weather.class);
+            return new Gson().fromJson(weatherContent, Weather.class);
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
+        return null;
+    }
+
+    // TODO 封装成一个数据解析的方法
+    public Object handleWeatherResponse(Object object, Response response) {
 
         return null;
     }

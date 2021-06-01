@@ -20,8 +20,10 @@ import androidx.fragment.app.Fragment;
 import com.example.kuou.db.City;
 import com.example.kuou.db.County;
 import com.example.kuou.db.Province;
-import com.example.kuou.util.HttpUtil;
-import com.example.kuou.util.Utility;
+import com.example.kuou.common.net.HttpUtil;
+import com.example.kuou.common.json.Utility;
+import com.example.kuou.module.weather.WeatherActivity;
+import com.qweather.sdk.bean.weather.WeatherNowBean;
 
 import org.jetbrains.annotations.NotNull;
 import org.litepal.LitePal;
@@ -285,6 +287,7 @@ public class ChooseAreaFragment extends Fragment {
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+                            WeatherNowBean a = new WeatherNowBean();a.getNow();
                             closeProgressDialog();
                             if ("province".equals(type)) {
                                 queryProvince();

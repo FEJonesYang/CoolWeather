@@ -41,6 +41,9 @@ public class Api {
     // 天气预警信息  https://devapi.qweather.com/v7/warning/now?location=101060101&key=575a4dd45c9f46ca833a259f953c76b3
     public static final String weatherWarn = baseUrl + "/v7/warning/now?location=";
 
+    // 天气预警信息城市列表的查询  https://devapi.qweather.com/v7/warning/list?range=cn&key=575a4dd45c9f46ca833a259f953c76b3
+    public static final String warnCityList = baseUrl + "/v7/warning/list?range=cn";
+
     // 历史天气数据查询 https://dev.qweather.com/docs/api/historical/historical-weather/
     public static final String historyWeather = baseUrl + "/v7/historical/weather?location=";
 

@@ -8,12 +8,10 @@ import android.content.SharedPreferences;
 import android.os.IBinder;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
-import android.widget.Toast;
 
-import com.example.kuou.WeatherActivity;
 import com.example.kuou.gson.Weather;
-import com.example.kuou.util.HttpUtil;
-import com.example.kuou.util.Utility;
+import com.example.kuou.common.net.HttpUtil;
+import com.example.kuou.common.json.Utility;
 
 import org.jetbrains.annotations.NotNull;
 

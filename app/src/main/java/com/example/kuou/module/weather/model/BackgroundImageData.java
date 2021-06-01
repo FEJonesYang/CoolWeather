@@ -8,7 +8,7 @@ import java.util.List;
  * @Data 2021-06-01
  * @Function
  */
-public class BackgroundData {
+public class BackgroundImageData {
 
     /**
      * images : [{"startdate":"20210531","fullstartdate":"202105311600","enddate":"20210601","url":"/th?id=OHR.PoetrysCave_ZH-CN3196193909_1920x1080.jpg&rf=LaDigue_1920x1080.jpg&pid=hp","urlbase":"/th?id=OHR.PoetrysCave_ZH-CN3196193909","copyright":"鸟瞰罗卡附近的Grotta della Poesia，意大利莱切 (© Amazing Aerial Agency/Offset by Shutterstock)","copyrightlink":"https://www.bing.com/search?q=%E8%8E%B1%E5%88%87&form=hpcapt&mkt=zh-cn","title":"","quiz":"/search?q=Bing+homepage+quiz&filters=WQOskey:%22HPQuiz_20210531_PoetrysCave%22&FORM=HPQUIZ","wp":true,"hsh":"32f3df9b3fdd14f268778f6bf7ae7ff6","drk":1,"top":1,"bot":1,"hs":[]}]
@@ -87,6 +87,17 @@ public class BackgroundData {
 
         public void setWalls(String walls) {
             this.walls = walls;
+        }
+
+        @Override
+        public String toString() {
+            return "TooltipsBean{" +
+                    "loading='" + loading + '\'' +
+                    ", previous='" + previous + '\'' +
+                    ", next='" + next + '\'' +
+                    ", walle='" + walle + '\'' +
+                    ", walls='" + walls + '\'' +
+                    '}';
         }
     }
 
@@ -244,5 +255,34 @@ public class BackgroundData {
         public void setHs(List<?> hs) {
             this.hs = hs;
         }
+
+        @Override
+        public String toString() {
+            return "ImagesBean{" +
+                    "startdate='" + startdate + '\'' +
+                    ", fullstartdate='" + fullstartdate + '\'' +
+                    ", enddate='" + enddate + '\'' +
+                    ", url='" + url + '\'' +
+                    ", urlbase='" + urlbase + '\'' +
+                    ", copyright='" + copyright + '\'' +
+                    ", copyrightlink='" + copyrightlink + '\'' +
+                    ", title='" + title + '\'' +
+                    ", quiz='" + quiz + '\'' +
+                    ", wp=" + wp +
+                    ", hsh='" + hsh + '\'' +
+                    ", drk=" + drk +
+                    ", top=" + top +
+                    ", bot=" + bot +
+                    ", hs=" + hs +
+                    '}';
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "BackgroundImageData{" +
+                "tooltips=" + tooltips +
+                ", images=" + images +
+                '}';
     }
 }

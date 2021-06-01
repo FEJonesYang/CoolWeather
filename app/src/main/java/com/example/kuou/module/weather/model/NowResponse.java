@@ -218,6 +218,27 @@ public class NowResponse {
         public void setDew(String dew) {
             this.dew = dew;
         }
+
+        @Override
+        public String toString() {
+            return "NowBean{" +
+                    "obsTime='" + obsTime + '\'' +
+                    ", temp='" + temp + '\'' +
+                    ", feelsLike='" + feelsLike + '\'' +
+                    ", icon='" + icon + '\'' +
+                    ", text='" + text + '\'' +
+                    ", wind360='" + wind360 + '\'' +
+                    ", windDir='" + windDir + '\'' +
+                    ", windScale='" + windScale + '\'' +
+                    ", windSpeed='" + windSpeed + '\'' +
+                    ", humidity='" + humidity + '\'' +
+                    ", precip='" + precip + '\'' +
+                    ", pressure='" + pressure + '\'' +
+                    ", vis='" + vis + '\'' +
+                    ", cloud='" + cloud + '\'' +
+                    ", dew='" + dew + '\'' +
+                    '}';
+        }
     }
 
     public static class ReferBean {
@@ -239,6 +260,25 @@ public class NowResponse {
         public void setLicense(List<String> license) {
             this.license = license;
         }
+
+        @Override
+        public String toString() {
+            return "ReferBean{" +
+                    "sources=" + sources +
+                    ", license=" + license +
+                    '}';
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "NowResponse{" +
+                "code='" + code + '\'' +
+                ", updateTime='" + updateTime + '\'' +
+                ", fxLink='" + fxLink + '\'' +
+                ", now=" + now +
+                ", refer=" + refer +
+                '}';
     }
 }
 

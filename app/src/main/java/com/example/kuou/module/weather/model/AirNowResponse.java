@@ -11,12 +11,11 @@ import java.util.List;
 
 public class AirNowResponse {
 
-
     /**
      * code : 200
-     * updateTime : 2021-05-30T08:47+08:00
+     * updateTime : 2021-06-01T14:52+08:00
      * fxLink : http://hfx.link/2ax1
-     * now : {"obsTime":"2021-05-30T08:32+08:00","temp":"19","feelsLike":"18","icon":"100","text":"晴","wind360":"45","windDir":"东北风","windScale":"2","windSpeed":"9","humidity":"58","precip":"0.0","pressure":"1004","vis":"18","cloud":"91","dew":"13"}
+     * now : {"obsTime":"2021-06-01T14:43+08:00","temp":"28","feelsLike":"26","icon":"101","text":"多云","wind360":"135","windDir":"东南风","windScale":"3","windSpeed":"12","humidity":"23","precip":"0.0","pressure":"1004","vis":"30","cloud":"91","dew":"6"}
      * refer : {"sources":["Weather China"],"license":["no commercial use"]}
      */
 
@@ -68,21 +67,21 @@ public class AirNowResponse {
 
     public static class NowBean implements Serializable {
         /**
-         * obsTime : 2021-05-30T08:32+08:00
-         * temp : 19
-         * feelsLike : 18
-         * icon : 100
-         * text : 晴
-         * wind360 : 45
-         * windDir : 东北风
-         * windScale : 2
-         * windSpeed : 9
-         * humidity : 58
+         * obsTime : 2021-06-01T14:43+08:00
+         * temp : 28
+         * feelsLike : 26
+         * icon : 101
+         * text : 多云
+         * wind360 : 135
+         * windDir : 东南风
+         * windScale : 3
+         * windSpeed : 12
+         * humidity : 23
          * precip : 0.0
          * pressure : 1004
-         * vis : 18
+         * vis : 30
          * cloud : 91
-         * dew : 13
+         * dew : 6
          */
 
         private String obsTime;
@@ -220,6 +219,27 @@ public class AirNowResponse {
         public void setDew(String dew) {
             this.dew = dew;
         }
+
+        @Override
+        public String toString() {
+            return "NowBean{" +
+                    "obsTime='" + obsTime + '\'' +
+                    ", temp='" + temp + '\'' +
+                    ", feelsLike='" + feelsLike + '\'' +
+                    ", icon='" + icon + '\'' +
+                    ", text='" + text + '\'' +
+                    ", wind360='" + wind360 + '\'' +
+                    ", windDir='" + windDir + '\'' +
+                    ", windScale='" + windScale + '\'' +
+                    ", windSpeed='" + windSpeed + '\'' +
+                    ", humidity='" + humidity + '\'' +
+                    ", precip='" + precip + '\'' +
+                    ", pressure='" + pressure + '\'' +
+                    ", vis='" + vis + '\'' +
+                    ", cloud='" + cloud + '\'' +
+                    ", dew='" + dew + '\'' +
+                    '}';
+        }
     }
 
     public static class ReferBean implements Serializable {
@@ -241,6 +261,25 @@ public class AirNowResponse {
         public void setLicense(List<String> license) {
             this.license = license;
         }
+
+        @Override
+        public String toString() {
+            return "ReferBean{" +
+                    "sources=" + sources +
+                    ", license=" + license +
+                    '}';
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "AirNowResponse{" +
+                "code='" + code + '\'' +
+                ", updateTime='" + updateTime + '\'' +
+                ", fxLink='" + fxLink + '\'' +
+                ", now=" + now +
+                ", refer=" + refer +
+                '}';
     }
 }
 

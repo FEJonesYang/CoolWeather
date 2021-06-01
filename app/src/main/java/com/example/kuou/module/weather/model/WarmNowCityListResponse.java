@@ -73,6 +73,14 @@ public class WarmNowCityListResponse {
         public void setLicense(List<String> license) {
             this.license = license;
         }
+
+        @Override
+        public String toString() {
+            return "ReferBean{" +
+                    "sources=" + sources +
+                    ", license=" + license +
+                    '}';
+        }
     }
 
     public static class WarningLocListBean implements Serializable {
@@ -89,5 +97,22 @@ public class WarmNowCityListResponse {
         public void setLocationId(String locationId) {
             this.locationId = locationId;
         }
+
+        @Override
+        public String toString() {
+            return "WarningLocListBean{" +
+                    "locationId='" + locationId + '\'' +
+                    '}';
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "WarmNowCityListResponse{" +
+                "code='" + code + '\'' +
+                ", updateTime='" + updateTime + '\'' +
+                ", refer=" + refer +
+                ", warningLocList=" + warningLocList +
+                '}';
     }
 }

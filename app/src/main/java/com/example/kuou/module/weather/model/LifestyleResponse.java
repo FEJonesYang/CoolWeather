@@ -83,6 +83,14 @@ public class LifestyleResponse {
         public void setLicense(List<String> license) {
             this.license = license;
         }
+
+        @Override
+        public String toString() {
+            return "ReferBean{" +
+                    "sources=" + sources +
+                    ", license=" + license +
+                    '}';
+        }
     }
 
     public static class DailyBean {
@@ -149,6 +157,29 @@ public class LifestyleResponse {
         public void setText(String text) {
             this.text = text;
         }
+
+        @Override
+        public String toString() {
+            return "DailyBean{" +
+                    "date='" + date + '\'' +
+                    ", type='" + type + '\'' +
+                    ", name='" + name + '\'' +
+                    ", level='" + level + '\'' +
+                    ", category='" + category + '\'' +
+                    ", text='" + text + '\'' +
+                    '}';
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "LifestyleResponse{" +
+                "code='" + code + '\'' +
+                ", updateTime='" + updateTime + '\'' +
+                ", fxLink='" + fxLink + '\'' +
+                ", refer=" + refer +
+                ", daily=" + daily +
+                '}';
     }
 }
 

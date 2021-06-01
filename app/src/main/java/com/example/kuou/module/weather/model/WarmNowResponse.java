@@ -83,6 +83,14 @@ public class WarmNowResponse {
         public void setLicense(List<String> license) {
             this.license = license;
         }
+
+        @Override
+        public String toString() {
+            return "ReferBean{" +
+                    "sources=" + sources +
+                    ", license=" + license +
+                    '}';
+        }
     }
 
     public static class WarningBean implements Serializable {
@@ -189,5 +197,32 @@ public class WarmNowResponse {
         public void setRelated(String related) {
             this.related = related;
         }
+
+        @Override
+        public String toString() {
+            return "WarningBean{" +
+                    "id='" + id + '\'' +
+                    ", sender='" + sender + '\'' +
+                    ", pubTime='" + pubTime + '\'' +
+                    ", title='" + title + '\'' +
+                    ", status='" + status + '\'' +
+                    ", level='" + level + '\'' +
+                    ", type='" + type + '\'' +
+                    ", typeName='" + typeName + '\'' +
+                    ", text='" + text + '\'' +
+                    ", related='" + related + '\'' +
+                    '}';
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "WarmNowResponse{" +
+                "code='" + code + '\'' +
+                ", updateTime='" + updateTime + '\'' +
+                ", fxLink='" + fxLink + '\'' +
+                ", refer=" + refer +
+                ", warning=" + warning +
+                '}';
     }
 }

@@ -33,6 +33,13 @@ import com.example.kuou.gson.Weather;
 import com.example.kuou.module.search.SearchCityActivity;
 import com.example.kuou.module.search.adapter.SearchCityRecycleViewAdapter;
 import com.example.kuou.module.search.model.SearchCityBean;
+import com.example.kuou.module.weather.interfaces.WeatherDataCallback;
+import com.example.kuou.module.weather.model.AirNowResponse;
+import com.example.kuou.module.weather.model.DailyResponse;
+import com.example.kuou.module.weather.model.LifestyleResponse;
+import com.example.kuou.module.weather.model.NowResponse;
+import com.example.kuou.module.weather.model.WarmNowCityListResponse;
+import com.example.kuou.module.weather.model.WarmNowResponse;
 import com.example.kuou.service.AutoUpdateService;
 import com.example.kuou.common.net.HttpUtil;
 import com.example.kuou.common.json.Utility;
@@ -45,7 +52,7 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class WeatherActivity extends AppCompatActivity implements SearchCityRecycleViewAdapter.ISendSearchCityDataToWeatherActivityListener {
+public class WeatherActivity extends AppCompatActivity implements SearchCityRecycleViewAdapter.ISendSearchCityDataToWeatherActivityListener, WeatherDataCallback {
 
     private static final String TAG = "WeatherActivity";
     private ScrollView weatherLayout;
@@ -185,6 +192,7 @@ public class WeatherActivity extends AppCompatActivity implements SearchCityRecy
     /**
      * 加载必应每日一图
      */
+    @Deprecated
     public void loadBingPic() {
         String requestBingPic = "http://guolin.tech/api/bing_pic";
         HttpUtil.sendOkHttpRequest(requestBingPic, new Callback() {
@@ -225,6 +233,7 @@ public class WeatherActivity extends AppCompatActivity implements SearchCityRecy
     /**
      * 根据天气的id请求城市天气信息
      */
+    @Deprecated
     public void requestWeather(final String weatherId) {
 
         String weatherUrl = "http://guolin.tech/api/weather?cityid=" + weatherId + "&key=575a4dd45c9f46ca833a259f953c76b3";
@@ -274,6 +283,7 @@ public class WeatherActivity extends AppCompatActivity implements SearchCityRecy
     /**
      * 处理并展示Weather实体类的数据
      */
+    @Deprecated
     public void showWeatherInfo(Weather weather) {
 
         String cityName = weather.basic.cityName;
@@ -335,5 +345,35 @@ public class WeatherActivity extends AppCompatActivity implements SearchCityRecy
     @Override
     protected void onDestroy() {
         super.onDestroy();
+    }
+
+    @Override
+    public void NowWeatherDataCallback(NowResponse nowResponse) {
+
+    }
+
+    @Override
+    public void LifeConditionDataCallback(LifestyleResponse lifestyleResponse) {
+
+    }
+
+    @Override
+    public void AirConditionDataCallback(AirNowResponse airNowResponse) {
+
+    }
+
+    @Override
+    public void AirConditionDataCallback(DailyResponse dailyResponse) {
+
+    }
+
+    @Override
+    public void WarmNowDataCallback(WarmNowResponse warmNowResponse) {
+
+    }
+
+    @Override
+    public void WarmNowCityListDataCallback(WarmNowCityListResponse warmNowCityListResponse) {
+
     }
 }

@@ -2,6 +2,7 @@ package com.example.kuou.module.weather.presenter;
 
 import com.example.kuou.common.net.Api;
 import com.example.kuou.common.net.HttpUtil;
+import com.example.kuou.module.weather.interfaces.WeatherDataCallback;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -34,6 +35,9 @@ public class WeatherPresenter {
         }
         return instance;
     }
+
+    // 持有数据回调的成员变量
+    private WeatherDataCallback mWeatherDataCallback;
 
     /**
      * 发起请求当前天气数据的
@@ -180,6 +184,23 @@ public class WeatherPresenter {
      */
     public void requestHistoryAirConditionData() {
         HttpUtil.sendOkHttpRequest(Api.historyAirCondition, new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+
+            }
+        });
+    }
+
+    /**
+     * 请求背景图片的
+     */
+    public void requestBackgroundImage() {
+        HttpUtil.sendOkHttpRequest(Api.getBackgroundImageUrl, new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
 

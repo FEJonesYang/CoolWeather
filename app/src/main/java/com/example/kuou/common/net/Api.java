@@ -50,4 +50,7 @@ public class Api {
     // 历史空气质量数据查询 https://dev.qweather.com/docs/api/historical/historical-air/
     public static final String historyAirCondition = baseUrl + "/v7/historical/air?location=";
 
+    // 背景图片的加载 https://cn.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=zh-CN
+    public static final String getBackgroundImageUrl = "https://cn.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=zh-CN";
+
 }

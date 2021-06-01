@@ -1,4 +1,4 @@
-package com.example.kuou.service.api;
+package com.example.kuou.common.net;
 
 /**
  * @author JonesYang

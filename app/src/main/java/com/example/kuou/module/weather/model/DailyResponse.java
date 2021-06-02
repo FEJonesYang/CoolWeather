@@ -84,6 +84,14 @@ public class DailyResponse {
         public void setLicense(List<String> license) {
             this.license = license;
         }
+
+        @Override
+        public String toString() {
+            return "ReferBean{" +
+                    "sources=" + sources +
+                    ", license=" + license +
+                    '}';
+        }
     }
 
     public static class DailyBean {
@@ -350,6 +358,49 @@ public class DailyResponse {
         public void setUvIndex(String uvIndex) {
             this.uvIndex = uvIndex;
         }
+
+        @Override
+        public String toString() {
+            return "DailyBean{" +
+                    "fxDate='" + fxDate + '\'' +
+                    ", sunrise='" + sunrise + '\'' +
+                    ", sunset='" + sunset + '\'' +
+                    ", moonrise='" + moonrise + '\'' +
+                    ", moonset='" + moonset + '\'' +
+                    ", moonPhase='" + moonPhase + '\'' +
+                    ", tempMax='" + tempMax + '\'' +
+                    ", tempMin='" + tempMin + '\'' +
+                    ", iconDay='" + iconDay + '\'' +
+                    ", textDay='" + textDay + '\'' +
+                    ", iconNight='" + iconNight + '\'' +
+                    ", textNight='" + textNight + '\'' +
+                    ", wind360Day='" + wind360Day + '\'' +
+                    ", windDirDay='" + windDirDay + '\'' +
+                    ", windScaleDay='" + windScaleDay + '\'' +
+                    ", windSpeedDay='" + windSpeedDay + '\'' +
+                    ", wind360Night='" + wind360Night + '\'' +
+                    ", windDirNight='" + windDirNight + '\'' +
+                    ", windScaleNight='" + windScaleNight + '\'' +
+                    ", windSpeedNight='" + windSpeedNight + '\'' +
+                    ", humidity='" + humidity + '\'' +
+                    ", precip='" + precip + '\'' +
+                    ", pressure='" + pressure + '\'' +
+                    ", vis='" + vis + '\'' +
+                    ", cloud='" + cloud + '\'' +
+                    ", uvIndex='" + uvIndex + '\'' +
+                    '}';
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "DailyResponse{" +
+                "code='" + code + '\'' +
+                ", updateTime='" + updateTime + '\'' +
+                ", fxLink='" + fxLink + '\'' +
+                ", refer=" + refer +
+                ", daily=" + daily +
+                '}';
     }
 }
 

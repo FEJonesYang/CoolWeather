@@ -112,10 +112,10 @@ public class Utility {
         return null;
     }
 
-    // TODO 封装成一个数据解析的方法
-    public Object handleWeatherResponse(Object object, Response response) {
-
-        return null;
+    // 返回一个 Gson 对象
+    public static Gson getGsonInstance() {
+        Gson gson = new Gson();
+        return gson;
     }
 }
 

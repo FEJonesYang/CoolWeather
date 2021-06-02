@@ -128,7 +128,7 @@ public class ChooseAreaFragment extends Fragment {
                         //刷新界面
                         activity.swipeRefreshLayout.setRefreshing(true);
                         //请求天气的数据
-                        activity.requestWeather(weatherId);
+//                        activity.requestWeather(weatherId);
                     }
 
                 }

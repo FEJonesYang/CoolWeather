@@ -7,6 +7,7 @@
     </data>
 
     <LinearLayout
+        android:id="@+id/ll_weather"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/colorPrimary"
@@ -17,13 +18,6 @@
         <include
             android:id="@+id/include_title"
             layout="@layout/title" />
-
-        <ImageView
-            android:id="@+id/bing_pic_img"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scaleType="centerCrop"
-            android:visibility="gone" />
 
         <androidx.drawerlayout.widget.DrawerLayout
             android:id="@+id/drawer_layout"

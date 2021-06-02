@@ -1,8 +1,16 @@
 package com.example.kuou.module.weather.presenter;
 
+import android.util.Log;
+
+import com.example.kuou.common.json.Utility;
 import com.example.kuou.common.net.Api;
 import com.example.kuou.common.net.HttpUtil;
 import com.example.kuou.module.weather.interfaces.WeatherDataCallback;
+import com.example.kuou.module.weather.model.AirNowConditionResponse;
+import com.example.kuou.module.weather.model.BackgroundImageData;
+import com.example.kuou.module.weather.model.DailyResponse;
+import com.example.kuou.module.weather.model.LifestyleResponse;
+import com.example.kuou.module.weather.model.NowResponse;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -18,6 +26,8 @@ import okhttp3.Response;
  * @Function 天气数据的实际提供者
  */
 public class WeatherPresenter {
+
+    private static final String TAG = "WeatherPresenter";
 
     // 单例模式
     private static volatile WeatherPresenter instance;
@@ -46,12 +56,14 @@ public class WeatherPresenter {
         HttpUtil.sendOkHttpRequest(Api.weatherNow + locationId, new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-
+                Log.d(TAG, "获取当前的天气信息失败---> " + e.getMessage());
             }
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-
+                NowResponse nowResponse = Utility.getGsonInstance().fromJson(response.body().string(), NowResponse.class);
+                Log.d(TAG, nowResponse.toString());
+                mWeatherDataCallback.nowWeatherDataCallback(nowResponse);
             }
         });
     }
@@ -65,12 +77,13 @@ public class WeatherPresenter {
         HttpUtil.sendOkHttpRequest(Api.airCondition + locationId, new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-
+                Log.d(TAG, e.getMessage());
             }
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-
+                AirNowConditionResponse airNowConditionResponse = Utility.getGsonInstance().fromJson(response.body().string(), AirNowConditionResponse.class);
+                mWeatherDataCallback.airConditionDataCallback(airNowConditionResponse);
             }
         });
     }
@@ -83,12 +96,13 @@ public class WeatherPresenter {
         HttpUtil.sendOkHttpRequest(Api.forecast3Day + locationId, new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-
+                Log.d(TAG, e.getMessage());
             }
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-
+                DailyResponse dailyResponse = Utility.getGsonInstance().fromJson(response.body().string(), DailyResponse.class);
+                mWeatherDataCallback.weatherForecastDataCallback(dailyResponse);
             }
         });
     }
@@ -101,12 +115,13 @@ public class WeatherPresenter {
         HttpUtil.sendOkHttpRequest(Api.forecast7Day + locationId, new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-
+                Log.d(TAG, e.getMessage());
             }
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-
+                DailyResponse dailyResponse = Utility.getGsonInstance().fromJson(response.body().string(), DailyResponse.class);
+                mWeatherDataCallback.weatherForecastDataCallback(dailyResponse);
             }
         });
     }
@@ -118,12 +133,13 @@ public class WeatherPresenter {
         HttpUtil.sendOkHttpRequest(Api.lifeCondition + locationId, new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-
+                Log.d(TAG, e.getMessage());
             }
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-
+                LifestyleResponse lifestyleResponse = Utility.getGsonInstance().fromJson(response.body().string(), LifestyleResponse.class);
+                mWeatherDataCallback.lifeConditionDataCallback(lifestyleResponse);
             }
         });
     }
@@ -186,7 +202,7 @@ public class WeatherPresenter {
         HttpUtil.sendOkHttpRequest(Api.historyAirCondition, new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-
+                Log.d(TAG, e.getMessage());
             }
 
             @Override
@@ -203,17 +219,25 @@ public class WeatherPresenter {
         HttpUtil.sendOkHttpRequest(Api.getBackgroundImageUrl, new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-
+                Log.d(TAG, "网络图片获取出现错误---> " + e.getMessage());
             }
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-
+                BackgroundImageData backgroundImageData = Utility.getGsonInstance()
+                        .fromJson(response.body().string(), BackgroundImageData.class);
+                Log.d(TAG, "https://cn.bing.com" +
+                        backgroundImageData.getImages().get(0).getUrl());
+                // 请求背景图片的时候，需要域名加上请求返回的 url
+                mWeatherDataCallback.loadImageUrlDataCallback("https://cn.bing.com" +
+                        backgroundImageData.getImages().get(0).getUrl());
             }
         });
     }
 
-
+    public void setWeatherDataCallback(WeatherDataCallback weatherDataCallback) {
+        mWeatherDataCallback = weatherDataCallback;
+    }
 }
 
 

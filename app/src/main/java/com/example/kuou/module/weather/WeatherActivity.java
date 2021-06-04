@@ -165,29 +165,8 @@ public class WeatherActivity extends AppCompatActivity implements SearchCityRecy
 
         // TODO 标题栏选择更多按钮，有时间写一个自定义的View
         mActivityWeatherBinding.includeTitle.ivMoreChoose.setOnClickListener((view) -> {
-            //创建弹出式菜单对象（最低版本11）
-            PopupMenu popup = new PopupMenu(this, view);//第二个参数是绑定的那个view
-            //获取菜单填充器
-            MenuInflater inflater = popup.getMenuInflater();
-            //填充菜单
-            inflater.inflate(R.menu.pop_menu, popup.getMenu());
-            //绑定菜单项的点击事件
-            popup.setOnMenuItemClickListener((item) -> {
-                switch (item.getItemId()) {
-                    case R.id.search_city:
-                        Intent intent = new Intent(this, SearchCityActivity.class);
-                        startActivity(intent);
-                        break;
-                    case R.id.about_author:
-                        //打开滑动抽屉
-                        drawerLayout.openDrawer(GravityCompat.START);
-                        break;
-                }
-                return false;
-            });
-            //显示(这一行代码不要忘记了)
-            popup.show();
-
+            Intent intent = new Intent(this, SearchCityActivity.class);
+            startActivity(intent);
         });
 
     }

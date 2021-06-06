@@ -3,12 +3,29 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.kuou">
 
+    <!--用于网络访问的-->
     <uses-permission android:name="android.permission.INTERNET" />
+    <!--用于写入缓存数据到扩展存储卡-->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <!--用于进行网络定位-->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"></uses-permission>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <!--用于获取运营商信息，用于支持提供运营商信息相关的接口-->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!--用于访问GPS定位-->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <!--用于读取手机当前的状态-->
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <!--用于访问wifi网络信息，wifi信息会用于进行网络定位-->
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <!--用于获取wifi的获取权限，wifi信息会用来进行网络定位-->
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <!--如果设置了target >= 28 如果需要启动后台定位则必须声明这个权限-->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <!--如果您的应用需要后台定位权限，且有可能运行在Android Q设备上,并且设置了target>28，必须增加这个权限声明-->
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+    <!--用于申请调用A-GPS模块-->
+    <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
 
     <application
         android:name="org.litepal.LitePalApplication"
@@ -20,6 +37,10 @@
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
 
+        <meta-data
+            android:name="com.amap.api.v2.apikey"
+            android:value="817296f9fdbec904aa9a5ad74ea8bfe1" />
+
 
         <!--搜索城市-->
         <activity
@@ -30,6 +51,10 @@
             </intent-filter>
         </activity>
 
+        <!--  定位服务  -->
+        <service android:name="com.amap.api.location.APSService" />
+
+        <!--用户后台自动对天气数据进行更新-->
         <service
             android:name=".service.AutoUpdateService"
             android:enabled="true"

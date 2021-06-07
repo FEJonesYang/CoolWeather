@@ -428,11 +428,8 @@ public class WeatherActivity extends AppCompatActivity implements SearchCityRecy
          */
         private void handleLifeSuggestion(@NotNull LifestyleResponse lifestyleResponse) {
             // 处理数据重复的问题
-            if (dailySuggestionList.size() != 0) {
-                dailySuggestionList.clear();
-            } else {
-                dailySuggestionList.addAll(lifestyleResponse.getDaily());
-            }
+            this.dailySuggestionList = lifestyleResponse.getDaily();
+            mMWeatherActivity.mLlSuggestion.removeAllViews();
 
             // 需要对生活建议进行特殊的处理，
             int suggestionSize = dailySuggestionList.size();
@@ -503,11 +500,9 @@ public class WeatherActivity extends AppCompatActivity implements SearchCityRecy
          */
         private void handleForecastWeatherData(DailyResponse dailyResponse) {
             // 解决数据重复添加的问题
-            if (dailyForecastList.size() != 0) {
-                dailyForecastList.clear();
-            } else {
-                dailyForecastList.addAll(dailyResponse.getDaily());
-            }
+            this.dailyForecastList = dailyResponse.getDaily();
+            mMWeatherActivity.mForecastWeatherContainer.removeAllViews();
+
             for (int i = 0; i < dailyForecastList.size(); i++) {
                 View view = LayoutInflater.from(mMWeatherActivity).inflate(R.layout.item_forecast, null, false);
                 mForecastDate = view.findViewById(R.id.tv_forecast_date);

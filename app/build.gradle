@@ -3,11 +3,19 @@ plugins {
 }
 
 android {
+    signingConfigs {
+        map {
+            keyAlias 'key0'
+            keyPassword '111111'
+            storePassword '111111'
+            storeFile file('/Users/apple/AndroidProject/CoolWeather/map.keystore')
+        }
+    }
     compileSdkVersion 29
     buildToolsVersion "30.0.2"
 
     defaultConfig {
-        applicationId "com.example.myapplication"
+        applicationId "com.example.kuou"
         minSdkVersion 17
         targetSdkVersion 29
         versionCode 1
@@ -20,6 +28,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.map
         }
     }
     compileOptions {
@@ -50,4 +59,5 @@ dependencies {
     implementation 'org.litepal.android:java:3.0.0'
     implementation files('libs/QWeather_Public_Android_V4.4.jar')
     implementation files('libs/AMap_Location_V5.3.1_20210331.jar')
+    implementation "org.greenrobot:eventbus:3.2.0"
 }

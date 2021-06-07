@@ -28,7 +28,7 @@
     <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
 
     <application
-        android:name="org.litepal.LitePalApplication"
+        android:name=".base.MyApplication"
         android:allowBackup="false"
         android:icon="@mipmap/logo"
         android:label="@string/app_name"
@@ -37,9 +37,10 @@
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
 
+        <!--地图申请的apiKey-->
         <meta-data
             android:name="com.amap.api.v2.apikey"
-            android:value="817296f9fdbec904aa9a5ad74ea8bfe1" />
+            android:value="6a996a6a5581b7cf7c1edab8f2582475" />
 
 
         <!--搜索城市-->
@@ -52,7 +53,9 @@
         </activity>
 
         <!--  定位服务  -->
-        <service android:name="com.amap.api.location.APSService" />
+        <service
+            android:name="com.amap.api.location.APSService"
+            android:foregroundServiceType="location" />
 
         <!--用户后台自动对天气数据进行更新-->
         <service

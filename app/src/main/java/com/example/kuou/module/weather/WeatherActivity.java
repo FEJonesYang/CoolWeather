@@ -2,12 +2,11 @@ package com.example.kuou.module.weather;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.PopupMenu;
-import androidx.core.view.GravityCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -19,7 +18,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -29,10 +27,13 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.amap.api.location.AMapLocation;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.example.kuou.R;
+import com.example.kuou.base.MyApplication;
+import com.example.kuou.common.message.LocationEventMessage;
 import com.example.kuou.databinding.ActivityWeatherBinding;
 import com.example.kuou.module.search.SearchCityActivity;
 import com.example.kuou.module.search.adapter.SearchCityRecycleViewAdapter;
@@ -47,8 +48,10 @@ import com.example.kuou.module.weather.model.WarmNowResponse;
 import com.example.kuou.module.weather.presenter.WeatherPresenter;
 
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.jetbrains.annotations.NotNull;
-import org.w3c.dom.Text;
 
 import java.lang.ref.WeakReference;
 
@@ -68,6 +71,12 @@ public class WeatherActivity extends AppCompatActivity implements SearchCityRecy
 
     private ScrollView weatherLayout;
 
+    // 这是 id 是用来获取提拉起数据的 id，定位时用的是经度纬度，城市搜索时用的是 locationId
+    private String locationId;
+    private String cityName;
+    // 整个的定位数据
+    private AMapLocation aMapLocation;
+
     private TextView degreeText, weatherInfoText;
 
 
@@ -75,7 +84,6 @@ public class WeatherActivity extends AppCompatActivity implements SearchCityRecy
     public SwipeRefreshLayout swipeRefreshLayout;
 
     //滑动菜单
-    public DrawerLayout drawerLayout;
     private ImageView navMap;
 
     // 线程切换的Handler
@@ -83,6 +91,7 @@ public class WeatherActivity extends AppCompatActivity implements SearchCityRecy
 
     // 加载必应背景图
     private LinearLayout mLinearLayout;
+    // 天气展示数据的 Presenter
     private WeatherPresenter mWeatherPresenter;
     private ActivityWeatherBinding mActivityWeatherBinding;
 
@@ -99,8 +108,10 @@ public class WeatherActivity extends AppCompatActivity implements SearchCityRecy
     private TextView mMoreAirCondition;
     private LinearLayout mLlSuggestion;
     private TextView mMoreLifeSuggestion;
+    private TextView titleCity;
 
 
+    @SuppressLint("LongLogTag")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -117,10 +128,16 @@ public class WeatherActivity extends AppCompatActivity implements SearchCityRecy
         super.onCreate(savedInstanceState);
         mActivityWeatherBinding = DataBindingUtil.setContentView(this, R.layout.activity_weather);
 
+        // 注册事件总线,用于接收在 MyApplication 获得的定位数据
+        EventBus.getDefault().register(this);
         initView();
+    }
 
+    @SuppressLint("LongLogTag")
+    @Override
+    protected void onStart() {
+        super.onStart();
         initEvent();
-
     }
 
     /**
@@ -140,13 +157,13 @@ public class WeatherActivity extends AppCompatActivity implements SearchCityRecy
         // 背景图片
         mWeatherPresenter.requestBackgroundImage();
         // 实时天气数据 TODO:先用北京的数据做测试，数据后面需要替换
-        mWeatherPresenter.requestNowWeatherData("101010300");
+        mWeatherPresenter.requestNowWeatherData(locationId);
         // 天气预报
-        mWeatherPresenter.requestForecast3DayData("101010300");
+        mWeatherPresenter.requestForecast3DayData(locationId);
         // 空气质量
-        mWeatherPresenter.requestAirConditionData("101010300");
+        mWeatherPresenter.requestAirConditionData(locationId);
         // 生活指数
-        mWeatherPresenter.requestLifeConditionData("101010300");
+        mWeatherPresenter.requestLifeConditionData(locationId);
 
         navMap.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -163,11 +180,13 @@ public class WeatherActivity extends AppCompatActivity implements SearchCityRecy
             }
         });
 
-        // TODO 标题栏选择更多按钮，有时间写一个自定义的View
         mActivityWeatherBinding.includeTitle.ivMoreChoose.setOnClickListener((view) -> {
             Intent intent = new Intent(this, SearchCityActivity.class);
             startActivity(intent);
         });
+
+        // 设置名称
+        titleCity.setText(cityName);
 
     }
 
@@ -178,11 +197,12 @@ public class WeatherActivity extends AppCompatActivity implements SearchCityRecy
         // 获取这个页面中的最外面的布局
         mLinearLayout = findViewById(R.id.ll_weather);
 
-        //滑动菜单的逻辑处理
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 
         //地图搜索功能
         navMap = (ImageView) findViewById(R.id.nav_button);
+
+        // 界面最上方的城市名称
+        titleCity = mActivityWeatherBinding.includeTitle.titleCity;
 
         // 滑动布局
         weatherLayout = (ScrollView) findViewById(R.id.weather_layout);
@@ -303,6 +323,20 @@ public class WeatherActivity extends AppCompatActivity implements SearchCityRecy
         message.what = POST_BACKGROUND_IMAGE;
         message.obj = url;
         mWeatherHandler.sendMessage(message);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
+    public void onMessageEvent(LocationEventMessage event) {
+        this.aMapLocation = event.getAMapLocation();
+        this.cityName = event.getAMapLocation().getDistrict();
+        this.locationId = event.getAMapLocation().getLongitude() + "," + event.getAMapLocation().getLatitude();
+    }
+
+    @Override
+    protected void onDestroy() {
+        EventBus.getDefault().removeStickyEvent(LocationEventMessage.class);
+        EventBus.getDefault().unregister(this);
+        super.onDestroy();
     }
 
 

@@ -3,7 +3,6 @@ package com.example.kuou.module.weather;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.annotation.SuppressLint;
@@ -32,7 +31,6 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.example.kuou.R;
-import com.example.kuou.base.MyApplication;
 import com.example.kuou.common.message.LocationEventMessage;
 import com.example.kuou.databinding.ActivityWeatherBinding;
 import com.example.kuou.module.search.SearchCityActivity;
@@ -54,6 +52,8 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class WeatherActivity extends AppCompatActivity implements SearchCityRecycleViewAdapter.ISendSearchCityDataToWeatherActivityListener, WeatherDataCallback {
@@ -145,25 +145,8 @@ public class WeatherActivity extends AppCompatActivity implements SearchCityRecy
      */
     private void initEvent() {
 
-        // 注册事件监听，在搜索城市获得数据之后，点击单个item需要获取数据
-        SearchCityRecycleViewAdapter.setISendSearchCityDataToWeatherActivityListener(this);
-
-        /**
-         * 实现接口回调的
-         * */
-        mWeatherPresenter = WeatherPresenter.getInstance();
-        // 注册
-        mWeatherPresenter.setWeatherDataCallback(this);
-        // 背景图片
-        mWeatherPresenter.requestBackgroundImage();
-        // 实时天气数据 TODO:先用北京的数据做测试，数据后面需要替换
-        mWeatherPresenter.requestNowWeatherData(locationId);
-        // 天气预报
-        mWeatherPresenter.requestForecast3DayData(locationId);
-        // 空气质量
-        mWeatherPresenter.requestAirConditionData(locationId);
-        // 生活指数
-        mWeatherPresenter.requestLifeConditionData(locationId);
+        // 获取数据
+        getWeatherData();
 
         navMap.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -176,7 +159,8 @@ public class WeatherActivity extends AppCompatActivity implements SearchCityRecy
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                //TODO 重新获取数据
+                getWeatherData();
+                swipeRefreshLayout.setRefreshing(false);
             }
         });
 
@@ -188,6 +172,39 @@ public class WeatherActivity extends AppCompatActivity implements SearchCityRecy
         // 设置名称
         titleCity.setText(cityName);
 
+    }
+
+    /**
+     * 获取天气的数据
+     */
+    private void getWeatherData() {
+        // 注册事件监听，在搜索城市获得数据之后，点击单个item需要获取数据
+        SearchCityRecycleViewAdapter.setISendSearchCityDataToWeatherActivityListener(this);
+
+        /**
+         * 实现接口回调的
+         * */
+        mWeatherPresenter = WeatherPresenter.getInstance();
+        // 注册
+        mWeatherPresenter.setWeatherDataCallback(this);
+        // 背景图片
+        mWeatherPresenter.requestBackgroundImage();
+        // 实时天气数据
+        mWeatherPresenter.requestNowWeatherData(locationId);
+        // 天气预报
+        mWeatherPresenter.requestForecast3DayData(locationId);
+        // 空气质量
+        mWeatherPresenter.requestAirConditionData(locationId);
+        // 生活指数
+        mWeatherPresenter.requestLifeConditionData(locationId);
+
+        Toast.makeText(this, "数据更新成功", Toast.LENGTH_SHORT).show();
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
     }
 
     /**
@@ -244,7 +261,8 @@ public class WeatherActivity extends AppCompatActivity implements SearchCityRecy
      */
     @Override
     public void postSearchCityData(SearchCityBean.LocationBean locationBean) {
-        Log.d(TAG, locationBean.toString());
+        this.cityName = locationBean.getName();
+        this.locationId = locationBean.getId();
         Intent intent = new Intent(this, WeatherActivity.class);
         startActivity(intent);
     }
@@ -260,7 +278,6 @@ public class WeatherActivity extends AppCompatActivity implements SearchCityRecy
         message.what = POST_NOW_WEATHER_DATA;
         message.obj = nowResponse;
         mWeatherHandler.sendMessage(message);
-        Log.d(TAG, nowResponse.toString());
     }
 
     /**
@@ -346,12 +363,14 @@ public class WeatherActivity extends AppCompatActivity implements SearchCityRecy
         private WeakReference<WeatherActivity> mWeatherActivityWeakReference;
         private WeatherActivity mMWeatherActivity;
         // 天气预报
+        private List<DailyResponse.DailyBean> dailyForecastList = new ArrayList<>();
         private TextView mForecastDate;
         private TextView mForecastDay;
         private TextView mForecastNight;
         private TextView mForecastWinDirection;
         private TextView mForecastTemperature;
         // 生活建议
+        private List<LifestyleResponse.DailyBean> dailySuggestionList = new ArrayList<>();
         private TextView mSuggestText;
         private TextView mSuggestionLevel;
         private TextView mSuggestionName;
@@ -408,8 +427,15 @@ public class WeatherActivity extends AppCompatActivity implements SearchCityRecy
          * @param lifestyleResponse
          */
         private void handleLifeSuggestion(@NotNull LifestyleResponse lifestyleResponse) {
+            // 处理数据重复的问题
+            if (dailySuggestionList.size() != 0) {
+                dailySuggestionList.clear();
+            } else {
+                dailySuggestionList.addAll(lifestyleResponse.getDaily());
+            }
+
             // 需要对生活建议进行特殊的处理，
-            int suggestionSize = lifestyleResponse.getDaily().size();
+            int suggestionSize = dailySuggestionList.size();
             if (suggestionSize > 3) {
                 // 超过了3条数据,但是只显示3条数据
                 for (int i = 0; i < 3; i++) {
@@ -476,7 +502,13 @@ public class WeatherActivity extends AppCompatActivity implements SearchCityRecy
          * @param dailyResponse
          */
         private void handleForecastWeatherData(DailyResponse dailyResponse) {
-            for (int i = 0; i < dailyResponse.getDaily().size(); i++) {
+            // 解决数据重复添加的问题
+            if (dailyForecastList.size() != 0) {
+                dailyForecastList.clear();
+            } else {
+                dailyForecastList.addAll(dailyResponse.getDaily());
+            }
+            for (int i = 0; i < dailyForecastList.size(); i++) {
                 View view = LayoutInflater.from(mMWeatherActivity).inflate(R.layout.item_forecast, null, false);
                 mForecastDate = view.findViewById(R.id.tv_forecast_date);
                 mForecastDay = view.findViewById(R.id.tv_forecast_day);

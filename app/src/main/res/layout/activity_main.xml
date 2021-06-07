@@ -5,12 +5,10 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-
-    <fragment
-        android:id="@+id/choose_area_fragment"
-        android:name="com.example.kuou.ChooseAreaFragment"
+    <ImageView
+        android:scaleType="fitXY"
+        android:src="@mipmap/icon_flash"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
-
 
 </FrameLayout>

@@ -72,10 +72,10 @@ public class WeatherActivity extends AppCompatActivity implements SearchCityRecy
     private ScrollView weatherLayout;
 
     // 这是 id 是用来获取提拉起数据的 id，定位时用的是经度纬度，城市搜索时用的是 locationId
-    private String locationId;
-    private String cityName;
+    private static String locationId;
+    private static String cityName;
     // 整个的定位数据
-    private AMapLocation aMapLocation;
+    private static AMapLocation aMapLocation;
 
     private TextView degreeText, weatherInfoText;
 
@@ -148,10 +148,13 @@ public class WeatherActivity extends AppCompatActivity implements SearchCityRecy
         // 获取数据
         getWeatherData();
 
+        // 重定位功能实现
         navMap.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO:地图业务
+                WeatherActivity.locationId = aMapLocation.getLongitude() + "," + aMapLocation.getLatitude();
+                WeatherActivity.cityName = aMapLocation.getDistrict();
+                getWeatherData();
             }
         });
 
@@ -169,8 +172,6 @@ public class WeatherActivity extends AppCompatActivity implements SearchCityRecy
             startActivity(intent);
         });
 
-        // 设置名称
-        titleCity.setText(cityName);
 
     }
 
@@ -199,6 +200,9 @@ public class WeatherActivity extends AppCompatActivity implements SearchCityRecy
         mWeatherPresenter.requestLifeConditionData(locationId);
 
         Toast.makeText(this, "数据更新成功", Toast.LENGTH_SHORT).show();
+
+        // 设置名称
+        titleCity.setText(cityName);
 
     }
 

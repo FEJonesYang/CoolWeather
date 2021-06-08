@@ -14,7 +14,7 @@ public class Api {
 
 
     // 城市信息查询 https://geoapi.qweather.com/v2/city/lookup?location=beij&key=575a4dd45c9f46ca833a259f953c76b3
-    public static final String queryCity = geoBaseUrl + "/v2/city/lookup?location=";
+    public static final String queryCity = geoBaseUrl + "/v2/city/lookup?range=cn&number=20&location=";
 
     // 热门城市查询 中国 top10 https://geoapi.qweather.com/v2/city/top?number=10&range=cn&key=575a4dd45c9f46ca833a259f953c76b3
     public static final String queryHotCity = geoBaseUrl + "/v2/city/top?number=10&range=cn";

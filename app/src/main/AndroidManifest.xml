@@ -2,29 +2,28 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.kuou">
-
-    <!--用于网络访问的-->
+    <!-- 用于网络访问的 -->
     <uses-permission android:name="android.permission.INTERNET" />
-    <!--用于写入缓存数据到扩展存储卡-->
+    <!-- 用于写入缓存数据到扩展存储卡 -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <!--用于进行网络定位-->
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"></uses-permission>
+    <!-- 用于进行网络定位 -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <!--用于获取运营商信息，用于支持提供运营商信息相关的接口-->
+    <!-- 用于获取运营商信息，用于支持提供运营商信息相关的接口 -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <!--用于访问GPS定位-->
+    <!-- 用于访问GPS定位 -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <!--用于读取手机当前的状态-->
+    <!-- 用于读取手机当前的状态 -->
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <!--用于访问wifi网络信息，wifi信息会用于进行网络定位-->
+    <!-- 用于访问wifi网络信息，wifi信息会用于进行网络定位 -->
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <!--用于获取wifi的获取权限，wifi信息会用来进行网络定位-->
+    <!-- 用于获取wifi的获取权限，wifi信息会用来进行网络定位 -->
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
-    <!--如果设置了target >= 28 如果需要启动后台定位则必须声明这个权限-->
+    <!-- 如果设置了target >= 28 如果需要启动后台定位则必须声明这个权限 -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <!--如果您的应用需要后台定位权限，且有可能运行在Android Q设备上,并且设置了target>28，必须增加这个权限声明-->
+    <!-- 如果您的应用需要后台定位权限，且有可能运行在Android Q设备上,并且设置了target>28，必须增加这个权限声明 -->
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
-    <!--用于申请调用A-GPS模块-->
+    <!-- 用于申请调用A-GPS模块 -->
     <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
 
     <application
@@ -37,13 +36,18 @@
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
 
-        <!--地图申请的apiKey-->
+        <!-- 地图显示的  -->
+        <activity android:name=".module.map.MapActivity">
+            <intent-filter>
+                <action android:name="com.example.kuou.module.map.MapActivity"/>
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <!-- 地图申请的apiKey -->
         <meta-data
             android:name="com.amap.api.v2.apikey"
             android:value="6a996a6a5581b7cf7c1edab8f2582475" />
-
-
-        <!--搜索城市-->
+        <!-- 搜索城市 -->
         <activity
             android:name=".module.search.SearchCityActivity"
             android:launchMode="standard">
@@ -51,35 +55,31 @@
                 <action android:name="com.example.kuou.module.search.SearchCityActivity" />
             </intent-filter>
         </activity>
-
-        <!--  定位服务  -->
+        <!-- 定位服务 -->
         <service
             android:name="com.amap.api.location.APSService"
             android:foregroundServiceType="location" />
-
-        <!--用户后台自动对天气数据进行更新-->
+        <!-- 用户后台自动对天气数据进行更新 -->
         <service
             android:name=".service.AutoUpdateService"
             android:enabled="true"
             android:exported="true" />
-
-        <!--天气显示的页面-->
+        <!-- 天气显示的页面 -->
         <activity
             android:name=".module.weather.WeatherActivity"
             android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="com.example.kuou.module.weather.WeatherActivity" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-
-        <!--应用启动的主界面-->
+        <!-- 应用启动的主界面 -->
         <activity
-            android:theme="@style/SplashTheme"
-            android:name=".MainActivity">
+            android:name=".MainActivity"
+            android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

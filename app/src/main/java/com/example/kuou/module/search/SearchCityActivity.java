@@ -1,15 +1,12 @@
 package com.example.kuou.module.search;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
-import androidx.databinding.adapters.SearchViewBindingAdapter;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
@@ -25,13 +22,17 @@ import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ScrollView;
+import android.widget.TextView;
 
 import com.example.kuou.R;
-import com.example.kuou.common.net.Api;
-import com.example.kuou.common.net.HttpUtil;
+import com.example.kuou.common.message.HotCityEventMessage;
 import com.example.kuou.databinding.ActivitySearchCityBinding;
 import com.example.kuou.module.search.adapter.SearchCityRecycleViewAdapter;
+import com.example.kuou.module.search.model.HotCityResponse;
 import com.example.kuou.module.search.model.SearchCityBean;
+import com.example.kuou.module.search.ui.HotCityFlowLayout;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -50,6 +51,12 @@ public class SearchCityActivity extends AppCompatActivity implements SearchCityP
 
     // 处理城市搜索数据时，进行线程切换的标志
     public static final int POST_SEARCH_CITY_DATA = 1;
+    private static final int POST_HOT_CITY_DATA = 2;
+    // 热门城市布局
+    private HotCityFlowLayout hotCityFlowLayout;
+    private List<HotCityResponse.TopCityListDTO> listDTOS = new ArrayList<>();
+    private RecyclerView recyclerViewCityList;
+    private TextView hotCityShow;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +93,7 @@ public class SearchCityActivity extends AppCompatActivity implements SearchCityP
         // 删除编辑框的内容
         mIvDeleteInput.setOnClickListener((l) -> {
             mEditText.getText().clear();
+            hotCityFlowLayout.setVisibility(View.VISIBLE);
         });
 
         // 文本框事件监听
@@ -101,10 +109,24 @@ public class SearchCityActivity extends AppCompatActivity implements SearchCityP
 
             @Override
             public void afterTextChanged(Editable s) {
+                // 如果输入框的长度等于0，则显示热点城市的布局，否则显示城市列表布局
+                if (s.length() == 0) {
+                    hotCityFlowLayout.setVisibility(View.VISIBLE);
+                    recyclerViewCityList.setVisibility(View.GONE);
+                    hotCityShow.setVisibility(View.VISIBLE);
+                } else {
+                    hotCityShow.setVisibility(View.GONE);
+                    hotCityFlowLayout.setVisibility(View.GONE);
+                    recyclerViewCityList.setVisibility(View.VISIBLE);
+                }
                 //发起网络请求
                 SearchCityPresenter.getInstance().queryLocation(s.toString());
             }
         });
+
+        // 热门城市网络请求数据
+        SearchCityPresenter.getInstance().queryHotLocation();
+
     }
 
     /**
@@ -119,14 +141,23 @@ public class SearchCityActivity extends AppCompatActivity implements SearchCityP
             startActivity(intent);
         });
 
+        // 输入框
         mEditText = mCityBinding.includeSearch.etInputCity;
 
+        // 删除按钮
         mIvDeleteInput = mCityBinding.includeSearch.ivDeleteInput;
+
+        // 热门城市
+        hotCityFlowLayout = mCityBinding.hotCityContainer;
+        hotCityShow = mCityBinding.tvShowHotCity;
+
+        // 城市列表
+        recyclerViewCityList = mCityBinding.containerCity;
 
     }
 
     /**
-     * 数据回调
+     * 数据回调，城市搜索数据
      *
      * @param searchCityBean
      */
@@ -140,6 +171,50 @@ public class SearchCityActivity extends AppCompatActivity implements SearchCityP
     }
 
     /**
+     * 热门城市的搜索数据
+     *
+     * @param hotCityResponse
+     */
+    @Override
+    public void postHotCityData(HotCityResponse hotCityResponse) {
+        Log.d(TAG, hotCityResponse.toString());
+        Message message = Message.obtain();
+        message.obj = hotCityResponse;
+        message.what = POST_HOT_CITY_DATA;
+        mSearchCityHandler.sendMessage(message);
+    }
+
+    /**
+     * 展示热门城市的数据
+     *
+     * @param hotCityResponse
+     */
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    private void handleHotCity(HotCityResponse hotCityResponse) {
+        this.listDTOS = hotCityResponse.getTopCityList();
+
+        for (int i = 0; i < listDTOS.size(); i++) {
+            TextView childView = new TextView(this);
+            // 设置名字
+            childView.setText(hotCityResponse.getTopCityList().get(i).getName());
+            // 背景
+            childView.setBackground(getDrawable(R.drawable.shape_bg_hot_city_item));
+            childView.setPadding(20, 5, 20, 5);
+            // 设置点击事件,
+            int index = i;
+            childView.setOnClickListener((l) -> {
+                childView.setBackground(getDrawable(R.drawable.shape_bg_hot_city_item_select));
+                EventBus.getDefault().post(new HotCityEventMessage(hotCityResponse, index));
+                Intent intent = new Intent("com.example.kuou.module.weather.WeatherActivity");
+                startActivity(intent);
+            });
+            hotCityFlowLayout.addView(childView);
+        }
+
+
+    }
+
+    /**
      * 使用Handler的静态内部类进行线程切换
      */
     private static class SearchCityHandler extends Handler {
@@ -150,17 +225,25 @@ public class SearchCityActivity extends AppCompatActivity implements SearchCityP
             mWeakReference = new WeakReference<>(activity);
         }
 
+        @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
         @Override
         public void handleMessage(@NonNull Message msg) {
             super.handleMessage(msg);
             switch (msg.what) {
                 // 处理城市信息查询的
-                case 1:
+                case POST_SEARCH_CITY_DATA:
                     mWeakReference.get().mAdapter.setSearchCityData((SearchCityBean) msg.obj);
                     break;
-                // TODO 处理热门城市搜索
+                // 处理热门城市的数据
+                case POST_HOT_CITY_DATA:
+                    mWeakReference.get().handleHotCity((HotCityResponse) msg.obj);
+                    break;
             }
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
 }

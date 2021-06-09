@@ -22,6 +22,7 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
     }
 
     buildTypes {
@@ -59,5 +60,7 @@ dependencies {
     implementation 'org.litepal.android:java:3.0.0'
     implementation files('libs/QWeather_Public_Android_V4.4.jar')
     implementation files('libs/AMap_Location_V5.3.1_20210331.jar')
+    implementation files('libs/AMap3DMap_7.9.1_AMapNavi_7.9.1_AMapSearch_7.9.0_20210414.jar')
     implementation "org.greenrobot:eventbus:3.2.0"
+    implementation 'com.android.support:multidex:1.0.3'
 }

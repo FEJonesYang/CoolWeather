@@ -3,8 +3,10 @@ package com.example.kuou.module.search;
 import android.util.Log;
 
 import com.example.kuou.base.Constants;
+import com.example.kuou.common.json.Utility;
 import com.example.kuou.common.net.Api;
 import com.example.kuou.common.net.HttpUtil;
+import com.example.kuou.module.search.model.HotCityResponse;
 import com.example.kuou.module.search.model.SearchCityBean;
 import com.google.gson.Gson;
 
@@ -59,6 +61,23 @@ public class SearchCityPresenter {
         });
     }
 
+    // 查询热门城市
+    public void queryHotLocation() {
+        HttpUtil.sendOkHttpRequest(Api.queryHotCity, new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                Log.e(TAG, e.getMessage());
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                HotCityResponse hotCityResponse = Utility.getGsonInstance().fromJson(response.body().string(), HotCityResponse.class);
+                mISendSearchCityListener.postHotCityData(hotCityResponse);
+                Log.d(TAG, hotCityResponse.toString());
+            }
+        });
+    }
+
     // 接口实现数据传递到SearchCityActivity
     private ISendSearchCityListener mISendSearchCityListener;
 
@@ -67,7 +86,11 @@ public class SearchCityPresenter {
     }
 
     public interface ISendSearchCityListener {
+        // 城市搜索数据
         void PostSearchData(SearchCityBean searchCityBean);
+
+        // 热门城市数据
+        void postHotCityData(HotCityResponse hotCityResponse);
     }
 
 

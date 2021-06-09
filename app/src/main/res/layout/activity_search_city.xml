@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:hotCity="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
@@ -16,6 +17,29 @@
         <include
             android:id="@+id/include_search"
             layout="@layout/bar_search_city" />
+
+        <TextView
+            android:id="@+id/tv_showHotCity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/shape_bg_hot_city_item_select"
+            android:paddingLeft="5dp"
+            android:paddingTop="2dp"
+            android:paddingRight="5dp"
+            android:paddingBottom="2dp"
+            android:text="热门城市"
+            android:textSize="16sp" />
+
+        <com.example.kuou.module.search.ui.HotCityFlowLayout
+            android:id="@+id/hotCityContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            hotCity:horizontal_spacing="15dp"
+            hotCity:vertical_spacing="10dp" />
 
         <ScrollView
             android:id="@+id/scroll_city"

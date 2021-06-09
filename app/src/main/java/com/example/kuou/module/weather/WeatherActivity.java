@@ -15,7 +15,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
@@ -31,6 +30,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.example.kuou.R;
+import com.example.kuou.common.message.HotCityEventMessage;
 import com.example.kuou.common.message.LocationEventMessage;
 import com.example.kuou.databinding.ActivityWeatherBinding;
 import com.example.kuou.module.search.SearchCityActivity;
@@ -131,13 +131,14 @@ public class WeatherActivity extends AppCompatActivity implements SearchCityRecy
         // 注册事件总线,用于接收在 MyApplication 获得的定位数据
         EventBus.getDefault().register(this);
         initView();
+        initEvent();
     }
 
     @SuppressLint("LongLogTag")
     @Override
     protected void onStart() {
         super.onStart();
-        initEvent();
+        getWeatherData();
     }
 
     /**
@@ -155,6 +156,17 @@ public class WeatherActivity extends AppCompatActivity implements SearchCityRecy
                 WeatherActivity.locationId = aMapLocation.getLongitude() + "," + aMapLocation.getLatitude();
                 WeatherActivity.cityName = aMapLocation.getDistrict();
                 getWeatherData();
+            }
+        });
+
+        // 地图功能实现，长按触发
+        navMap.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                Intent intent = new Intent("com.example.kuou.module.map.MapActivity");
+                startActivity(intent);
+                // 返回true，不再触发单次点击的事件
+                return true;
             }
         });
 
@@ -351,6 +363,12 @@ public class WeatherActivity extends AppCompatActivity implements SearchCityRecy
         this.aMapLocation = event.getAMapLocation();
         this.cityName = event.getAMapLocation().getDistrict();
         this.locationId = event.getAMapLocation().getLongitude() + "," + event.getAMapLocation().getLatitude();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onHotCityMessageEvent(HotCityEventMessage event) {
+        this.locationId = event.getHotCityResponse().getTopCityList().get(event.getIndex()).getId();
+        this.cityName = event.getHotCityResponse().getTopCityList().get(event.getIndex()).getName();
     }
 
     @Override

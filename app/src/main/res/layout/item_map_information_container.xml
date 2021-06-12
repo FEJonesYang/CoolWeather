@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/shape_bg_map_information"
+    android:paddingLeft="16dp"
+    android:paddingTop="16dp"
+    android:paddingRight="16dp"
+    android:paddingBottom="16dp">
+
+
+    <TextView
+        android:id="@+id/tv_map_location_city_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="南岸"
+        android:textSize="18sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_map_location_city_temperature"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="40"
+        android:textSize="40sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_map_location_city_name" />
+
+    <LinearLayout
+        android:id="@+id/ll_map_location_api_cloudy_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:orientation="vertical"
+        app:layout_constraintLeft_toRightOf="@id/tv_map_location_city_temperature"
+        app:layout_constraintTop_toTopOf="@id/tv_map_location_city_temperature">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/tv_map_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="多云"
+                android:textSize="16sp" />
+
+            <ImageView
+                android:id="@+id/iv_map_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_map_api"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="aqi指数:"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ll_map_location_api_cloudy_container">
+
+        <TextView
+            android:id="@+id/tv_map_pressure"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:width="0dp"
+            android:gravity="center"
+            android:text="气压"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/tv_map_windDir"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_weight="1"
+            android:width="0dp"
+            android:gravity="center"
+            android:text="风向"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/tv_map_humidity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_weight="1"
+            android:width="0dp"
+            android:gravity="center"
+            android:text="风向"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

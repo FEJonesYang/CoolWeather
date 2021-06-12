@@ -537,8 +537,7 @@ public class WeatherActivity extends AppCompatActivity implements SearchCityRecy
                 mForecastDay.setText(dailyResponse.getDaily().get(i).getTextDay());
                 mForecastNight.setText(dailyResponse.getDaily().get(i).getTextNight());
                 mForecastWinDirection.setText(dailyResponse.getDaily().get(i).getWindDirDay());
-                mForecastTemperature.setText(dailyResponse.getDaily().get(i).getTempMax() + "℃/" +
-                        dailyResponse.getDaily().get(i).getTempMin() + "℃/");
+                mForecastTemperature.setText(dailyResponse.getDaily().get(i).getTempMax() + "℃" + "~" + dailyResponse.getDaily().get(i).getTempMin() + "℃");
                 mMWeatherActivity.mForecastWeatherContainer.addView(view);
             }
         }

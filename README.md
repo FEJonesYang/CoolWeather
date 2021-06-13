@@ -2,26 +2,47 @@
 
 
 
-## 一、功能需求及技术可行性分析 
+## 一、功能需求及技术可行性分析
 
-### 1、具备的功能
+### 1、 第三方平台接入
 
-- 可以罗列出全国所有的省市县
-- 可以查看全国任意城市的天气信息
-- 可以自由地切换城市，去查看其他城市地天气
-- 提供手动更新以及后台自动更新天气的功能
+#### 一、[和风天气](https://dev.qweather.com/docs/start/#使用api)
+
+- 申请和风天气的对应 apiKey，具体和风天气的官网。
+- 可以使用和风天气为我们封装好了的SDK，也可以使用它提供的 Api 文档，在这里我使用的是后者。
+
+#### 二、[高德地图](https://lbs.amap.com)
+
+同样，接入高德地图也需要获取到 apiKey，这里有两个需要注意的地方：
+
+<img src="https://tva1.sinaimg.cn/large/008i3skNly1grgbwd1kb8j30yf0u0k4d.jpg" style="zoom:33%;" />
 
 
 
-### 2、技术可行性分析
+- 第一处是发布版本的 SHA1，我们需要自己创建一个 xxx.jks 文件，然后使用 keytool -list -v -keystore xxx.jks 命令获取到它的值。
+- 第二处是发布版本的 SHA1 ，需要进入 .android 文件，执行 keytool -list -v -keystore debug.keystore。
+
+**注意**：MacOS 需要在命令前面加上：/Applications/Android\ Studio.app/Contents/jre/jdk/Contents/Home/bin/
+
+
+
+### 2、具备的功能
+
+- 支持定位到当前城市，获取定位城市的天气信息。
+- 支持城市搜索，可以定位到全国任意的城市。
+- 城市切换后，还可以支持重新定位到当前的城市。
+- 接入了高德的地图 SDK，支持制图模式下，点击全国任何一个地方，展示该地方的天气状况。
+
+
+
+### 3、技术可行性分析
 
 1. 如何获取天气数据的接口
-   - 省市县数据接口：http://guolin.tech/api/china
-   - 和风天气数据接口
+   - 和风天气数据接口，详见和风天气提供的 Api。
+   - 高德定位 SDK 以及地图 SDK，详见高德地图开发者平台。
 
 2. 编写步骤
    - 基本配置
-   - 创建数据库和表
    - 遍历全国省市县数据
    - 显示天气数据
    - 编写天气界面
@@ -30,7 +51,6 @@
    - 手动更新天气
    - 手动切换城市
    - 后台自动更新天气
-   - 扩展功能【有空再写】
    - 修改图标和名称
 
 
@@ -41,8 +61,8 @@
 
 - 图片加载框架：Glide
 - JSON解析框架：Gson
-- 数据库框架：Litepal
 - 网络访问框架：OKHttp3
+- 事件传递机制：EventBus
 
 2. 收获
 
@@ -53,33 +73,19 @@
 
 ## 三、框架以及技术使用概要
 
-1. 项目结构图
+1. **项目结构图**
 
-![项目系统结构图](https://tva1.sinaimg.cn/large/007S8ZIlly1gi7j4n0k05j30lw0msmzf.jpg)
+   - 项目结构图
+
+     <img src="https://tva1.sinaimg.cn/large/008i3skNly1grgcwd62rpj30io0t0ahq.jpg" style="zoom:33%;" />
+
+   - 流程图
+
+<img src="https://tva1.sinaimg.cn/large/008i3skNly1grgctg2ptrj30p40lgqdc.jpg" style="zoom:50%;" />
 
 
 
-2. [LitePal使用指南](https://github.com/guolindev/LitePal)
 
-   - **Include library**
-
-     ```java
-     implementation 'org.litepal.guolindev:core:3.2.1'
-     ```
-
-   - **Configure litepal.xml**
-
-   - **Configure LitePalApplication**
-
-     ```java
-     android:name="org.litepal.LitePalApplication"
-     ```
-
-   - **Create tables**
-     - 表类继承**LitePalSupport** 
-     - 在litepal.xml中添加映射关系
-
-   - 增、删、查、改
 
 
 
@@ -105,7 +111,7 @@
      Object oj = gson.fromJson(json,Object.class);
      ```
 
-     
+
 
 
 
@@ -135,23 +141,23 @@
        } else {
          myImageView = (ImageView) recycled;
        }
-     
+
        String url = myUrls.get(position);
-     
+
        Glide
          .with(myFragment)
          .load(url)
          .centerCrop()
          .placeholder(R.drawable.loading_spinner)
          .into(myImageView);
-     
+
        return myImageView;
      }
      ```
 
-     
 
-   
+
+
 
 5. [OKHttp使用指南](https://square.github.io/okhttp/)
 
@@ -178,32 +184,114 @@
 
 
 
-6. 下拉刷新实现
+6. EventBus 使用指南
 
-   - XML文件需要加入**SwipeRefreshLayout**控件
+   EventBus 是基于发布定于模式的，相对传统的接口回调和广播机制，它使得项目代码的耦合性降低，使用也相对简单。使用 EventBus 需要进行注册，但是记得在 Activity 销毁的时候进行反注册，否则会造成内存泄漏。普通事件要求发布者发布事件的时候，订阅者已经存在，否则接受不到事件，但是粘性事件的可以不要求已经存在订阅者，订阅者可以后面创建了之后接受传递的数据。
 
-   - 设置下拉监听事件
+
+
+   - 普通事件
 
      ```java
-     swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-                 @Override
-                 public void onRefresh() {
-     
-                 }
-             });
+     // 在获取到的数据之后进行数据的发送
+     EventBus.getDefault().post(“message”);
+
+     // 在需要接收数据的地方进行注册监听
+     EventBus.getDefault().register(this);
+
+     // 当组件销毁时需要进行反注册
+     EventBus.getDefault().unregister(this);
      ```
 
-   - 停止刷新
 
+
+   - 粘性事件
+
+     ```java
+     // 发送粘性事件
+     EventBus.getDefault().postSticky(“message”);
+
+     // 取消注册的时候有一点区别
+     EventBus.getDefault().removeStickyEvent(LocationEventMessage.class);
      ```
-     swipeRefreshLayout.setRefreshing(false);
-     ```
-
-     
 
 
 
+7. 下拉刷新实现
 
+- XML文件需要加入**SwipeRefreshLayout**控件
+
+- 设置下拉监听事件
+
+  ```java
+  swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+              @Override
+              public void onRefresh() {
+
+              }
+          });
+  ```
+
+- 停止刷新
+
+  ```
+  swipeRefreshLayout.setRefreshing(false);
+  ```
+
+
+
+## 四、功能实现概述
+
+### 1、 实现闪屏界面
+
+- 使用 Handler 发送一个延时的任务，启动主界面，这样就实现了闪屏界面，具体代如下：
+
+          new Handler().postDelayed(new Runnable() {
+              @Override
+              public void run() {
+                  Intent intent = new Intent(MainActivity.this, WeatherActivity.class);
+                  startActivity(intent);
+              }
+          }, 5000);
+
+- 避免出现白屏的现象
+
+  - 在 style.xml 创建一个 style
+
+    ```xml
+    <style name="SplashTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowBackground">@mipmap/icon_flash</item>
+    </style>
+    ```
+
+  - 在 AndroidManifest.xml 中为这个Activity 指定一个theme
+
+    ```xml
+    android:theme="@style/SplashTheme"
+    ```
+
+
+
+###  2、定位功能实现
+
+在 Application 中的 onCreate() ，获取到当前的经度纬度，然后通过 EventBus 发送粘性事件，把获取到的数据传递给展示天气信息的界面。这个是时候 WeatehrActivity 还有创建，所以需要发布粘性事件。配置方面根据高德地图提供的示例进行配置，下面看看它是如何发布事件：
+
+```java
+        mLocationListener = (location) -> {
+
+            if (location != null) {
+                if (location.getErrorCode() == 0) {
+                    //发送粘性事件,在展示天气数据的 WeatehrActivity 创建之后就会接收该数据，执行网络数据的获取
+                    EventBus.getDefault().postSticky(new LocationEventMessage(location));
+                } else {
+                    //定位失败时，可通过ErrCode（错误码）信息来确定失败的原因，errInfo是错误信息，详见错误码表。
+                    Log.e("AmapError", "location Error, ErrCode:"
+                            + location.getErrorCode() + ", errInfo:"
+                            + location.getErrorInfo());
+                }
+            }
+        };
+```
 
 
 

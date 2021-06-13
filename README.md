@@ -4,6 +4,14 @@
 
 ## 一、功能需求及技术可行性分析
 
+### 0、 程序运行截图
+
+<img src="https://tva1.sinaimg.cn/large/008i3skNly1grgetjytm2j30u00wchdu.jpg" alt="截屏2021-06-13 10.03.04" style="zoom:50%;" />
+
+<img src="https://tva1.sinaimg.cn/large/008i3skNly1grgewgowsdj30u00wfjvg.jpg" alt="截屏2021-06-13 10.05.57" style="zoom:50%;" />
+
+
+
 ### 1、 第三方平台接入
 
 #### 一、[和风天气](https://dev.qweather.com/docs/start/#使用api)
@@ -208,11 +216,7 @@
    - 粘性事件
 
      ```java
-     // 发送粘性事件
-     EventBus.getDefault().postSticky(“message”);
-
-     // 取消注册的时候有一点区别
-     EventBus.getDefault().removeStickyEvent(LocationEventMessage.class);
+     // 发送粘性事件EventBus.getDefault().postSticky(“message”);// 取消注册的时候有一点区别EventBus.getDefault().removeStickyEvent(LocationEventMessage.class);
      ```
 
 
@@ -224,12 +228,7 @@
 - 设置下拉监听事件
 
   ```java
-  swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-              @Override
-              public void onRefresh() {
-
-              }
-          });
+  swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {            @Override            public void onRefresh() {            }        });
   ```
 
 - 停止刷新
@@ -246,22 +245,14 @@
 
 - 使用 Handler 发送一个延时的任务，启动主界面，这样就实现了闪屏界面，具体代如下：
 
-          new Handler().postDelayed(new Runnable() {
-              @Override
-              public void run() {
-                  Intent intent = new Intent(MainActivity.this, WeatherActivity.class);
-                  startActivity(intent);
-              }
-          }, 5000);
+          new Handler().postDelayed(new Runnable() {        @Override        public void run() {            Intent intent = new Intent(MainActivity.this, WeatherActivity.class);            startActivity(intent);        }    }, 5000);
 
 - 避免出现白屏的现象
 
   - 在 style.xml 创建一个 style
 
     ```xml
-    <style name="SplashTheme" parent="Theme.AppCompat.NoActionBar">
-        <item name="android:windowBackground">@mipmap/icon_flash</item>
-    </style>
+    <style name="SplashTheme" parent="Theme.AppCompat.NoActionBar">    <item name="android:windowBackground">@mipmap/icon_flash</item></style>
     ```
 
   - 在 AndroidManifest.xml 中为这个Activity 指定一个theme
@@ -277,20 +268,7 @@
 在 Application 中的 onCreate() ，获取到当前的经度纬度，然后通过 EventBus 发送粘性事件，把获取到的数据传递给展示天气信息的界面。这个是时候 WeatehrActivity 还有创建，所以需要发布粘性事件。配置方面根据高德地图提供的示例进行配置，下面看看它是如何发布事件：
 
 ```java
-        mLocationListener = (location) -> {
-
-            if (location != null) {
-                if (location.getErrorCode() == 0) {
-                    //发送粘性事件,在展示天气数据的 WeatehrActivity 创建之后就会接收该数据，执行网络数据的获取
-                    EventBus.getDefault().postSticky(new LocationEventMessage(location));
-                } else {
-                    //定位失败时，可通过ErrCode（错误码）信息来确定失败的原因，errInfo是错误信息，详见错误码表。
-                    Log.e("AmapError", "location Error, ErrCode:"
-                            + location.getErrorCode() + ", errInfo:"
-                            + location.getErrorInfo());
-                }
-            }
-        };
+        mLocationListener = (location) -> {            if (location != null) {                if (location.getErrorCode() == 0) {                    //发送粘性事件,在展示天气数据的 WeatehrActivity 创建之后就会接收该数据，执行网络数据的获取                    EventBus.getDefault().postSticky(new LocationEventMessage(location));                } else {                    //定位失败时，可通过ErrCode（错误码）信息来确定失败的原因，errInfo是错误信息，详见错误码表。                    Log.e("AmapError", "location Error, ErrCode:"                            + location.getErrorCode() + ", errInfo:"                            + location.getErrorInfo());                }            }        };
 ```
 
 

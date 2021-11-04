@@ -21,26 +21,36 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="15dp"
+                android:layout_marginLeft="9dp"
                 android:layout_marginTop="15dp"
                 android:text="空气质量"
                 android:textColor="#fff"
                 android:textSize="20sp" />
 
-            <TextView
-                android:id="@+id/tv_more_air_condition"
+            <LinearLayout
+                android:id="@+id/ll_more_weather_aqi"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
-                android:layout_marginTop="15dp"
-                android:layout_marginRight="16dp"
-                android:background="@drawable/shape_item_suggestion"
-                android:paddingLeft="5dp"
-                android:paddingRight="5dp"
-                android:text="更多"
-                android:visibility="gone"
-                android:textColor="#fff"
-                android:textSize="15sp" />
+                android:layout_marginTop="15sp"
+                android:layout_marginRight="9dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="更多"
+                    android:textColor="#fff"
+                    android:textSize="15sp" />
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@mipmap/icon_arrow_right" />
+
+            </LinearLayout>
+
 
         </RelativeLayout>
 

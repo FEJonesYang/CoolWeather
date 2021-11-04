@@ -27,7 +27,7 @@
     <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
 
     <application
-        android:name=".base.MyApplication"
+        android:name=".base.CoolWeatherApplication"
         android:allowBackup="false"
         android:icon="@mipmap/logo"
         android:label="@string/app_name"

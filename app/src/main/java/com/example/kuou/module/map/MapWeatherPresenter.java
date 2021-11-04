@@ -55,7 +55,6 @@ public class MapWeatherPresenter {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 NowResponse nowResponse = Utility.getGsonInstance().fromJson(response.body().string(), NowResponse.class);
-                Log.d(TAG + "yangchao", nowResponse.toString());
                 mapWeatherListener.postMapWeatherData(nowResponse);
             }
         });
@@ -73,7 +72,6 @@ public class MapWeatherPresenter {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 SearchCityBean searchCityBean = Utility.getGsonInstance().fromJson(response.body().string(), SearchCityBean.class);
-                Log.d(TAG + "yangchao", searchCityBean.toString());
                 mapWeatherListener.postCityName(searchCityBean.getLocation().get(0).getName());
             }
         });

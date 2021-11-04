@@ -1,5 +1,9 @@
 package com.example.kuou.common.net;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+
 import com.example.kuou.base.Constants;
 
 import java.util.logging.Handler;
@@ -22,5 +26,21 @@ public class HttpUtil {
         Request request = new Request.Builder().url(address + Constants.HWeatherKey).build();
         //3、使用 第一步和第二部 创建的对象发送网络请求
         client.newCall(request).enqueue(callback);
+    }
+
+    /**
+     * 判断网络是否可用
+     *
+     * @param context
+     * @return
+     */
+    public static boolean isNetWorkConnection(Context context) {
+        ConnectivityManager manager = (ConnectivityManager) context
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = manager.getActiveNetworkInfo();
+        if (networkInfo != null) {
+            return networkInfo.isAvailable();
+        }
+        return false;
     }
 }

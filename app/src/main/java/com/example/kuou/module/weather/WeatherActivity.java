@@ -26,12 +26,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.amap.api.location.AMapLocation;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.target.SimpleTarget;
-import com.bumptech.glide.request.transition.Transition;
 import com.example.kuou.R;
+import com.example.kuou.base.Constants;
 import com.example.kuou.common.message.HotCityEventMessage;
 import com.example.kuou.common.message.LocationEventMessage;
+import com.example.kuou.common.net.HttpUtil;
+import com.example.kuou.common.utils.UIUtil;
 import com.example.kuou.databinding.ActivityWeatherBinding;
 import com.example.kuou.module.search.SearchCityActivity;
 import com.example.kuou.module.search.adapter.SearchCityRecycleViewAdapter;
@@ -49,35 +49,22 @@ import com.example.kuou.module.weather.presenter.WeatherPresenter;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-import org.jetbrains.annotations.NotNull;
-
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.List;
 
 
 public class WeatherActivity extends AppCompatActivity implements SearchCityRecycleViewAdapter.ISendSearchCityDataToWeatherActivityListener, WeatherDataCallback {
 
     private static final String TAG = "WeatherActivity";
 
-    /**
-     * 线程切换相关的 what 标志
-     */
-    private static final int POST_BACKGROUND_IMAGE = 1;
-    private static final int POST_NOW_WEATHER_DATA = 2;
-    private static final int POST_FORECAST_WEATHER_DATA = 3;
-    private static final int POST_AIR_CONDITION_DATA = 4;
-    private static final int POST_LIFE_SUGGESTION = 5;
 
     private ScrollView weatherLayout;
 
     // 这是 id 是用来获取提拉起数据的 id，定位时用的是经度纬度，城市搜索时用的是 locationId
-    private static String locationId;
-    private static String cityName;
+    private String locationId;
+    private String cityName;
     // 整个的定位数据
-    private static AMapLocation aMapLocation;
+    private AMapLocation aMapLocation;
 
-    private TextView degreeText, weatherInfoText;
+    public TextView degreeText, weatherInfoText;
 
 
     //更新天气控件
@@ -90,7 +77,7 @@ public class WeatherActivity extends AppCompatActivity implements SearchCityRecy
     private WeatherHandler mWeatherHandler = new WeatherHandler(this);
 
     // 加载必应背景图
-    private LinearLayout mLinearLayout;
+    public LinearLayout mLinearLayout;
     // 天气展示数据的 Presenter
     private WeatherPresenter mWeatherPresenter;
     private ActivityWeatherBinding mActivityWeatherBinding;
@@ -98,17 +85,17 @@ public class WeatherActivity extends AppCompatActivity implements SearchCityRecy
     /**
      * 持有的数据实体
      */
-    private TextView mWinDirection;
-    private TextView mHumidity;
-    private TextView mAirPressure;
-    private TextView mUpdateTime;
-    private LinearLayout mForecastWeatherContainer;
-    private TextView mTvAqi;
-    private TextView mTvPm25;
-    private TextView mMoreAirCondition;
-    private LinearLayout mLlSuggestion;
-    private TextView mMoreLifeSuggestion;
-    private TextView titleCity;
+    public TextView mWinDirection;
+    public TextView mHumidity;
+    public TextView mAirPressure;
+    public TextView mUpdateTime;
+    public LinearLayout mForecastWeatherContainer;
+    public TextView mTvAqi;
+    public TextView mTvPm25;
+    public LinearLayout mMoreAirCondition;
+    public LinearLayout mLlSuggestion;
+    public LinearLayout mMoreLifeSuggestion;
+    public TextView titleCity;
 
 
     @SuppressLint("LongLogTag")
@@ -153,8 +140,8 @@ public class WeatherActivity extends AppCompatActivity implements SearchCityRecy
         navMap.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                WeatherActivity.locationId = aMapLocation.getLongitude() + "," + aMapLocation.getLatitude();
-                WeatherActivity.cityName = aMapLocation.getDistrict();
+                locationId = aMapLocation.getLongitude() + "," + aMapLocation.getLatitude();
+                cityName = aMapLocation.getDistrict();
                 getWeatherData();
             }
         });
@@ -191,6 +178,16 @@ public class WeatherActivity extends AppCompatActivity implements SearchCityRecy
      * 获取天气的数据
      */
     private void getWeatherData() {
+        // 网络状况判断
+        if (!HttpUtil.isNetWorkConnection(this)) {
+            weatherLayout.setVisibility(View.GONE);
+            UIUtil.showErrorView(this);
+            UIUtil.showShortToast(this, "请检查网络状况");
+            return;
+        } else {
+            weatherLayout.setVisibility(View.VISIBLE);
+            UIUtil.hideErrorView(this);
+        }
         // 注册事件监听，在搜索城市获得数据之后，点击单个item需要获取数据
         SearchCityRecycleViewAdapter.setISendSearchCityDataToWeatherActivityListener(this);
 
@@ -257,11 +254,11 @@ public class WeatherActivity extends AppCompatActivity implements SearchCityRecy
         // 生活质量,这里只有 aqi 和 pm2.5
         mTvAqi = findViewById(R.id.tv_api);
         mTvPm25 = findViewById(R.id.tv_pm25);
-        mMoreAirCondition = findViewById(R.id.tv_more_air_condition);
+        mMoreAirCondition = findViewById(R.id.ll_more_weather_aqi);
 
         // 生活建议的布局
         mLlSuggestion = findViewById(R.id.ll_suggestion_container);
-        mMoreLifeSuggestion = findViewById(R.id.tv_more_life_suggestion);
+        mMoreLifeSuggestion = findViewById(R.id.ll_more_weather_suggestion);
 
 
         //更新天气的处理逻辑
@@ -291,7 +288,7 @@ public class WeatherActivity extends AppCompatActivity implements SearchCityRecy
     @Override
     public void nowWeatherDataCallback(NowResponse nowResponse) {
         Message message = mWeatherHandler.obtainMessage();
-        message.what = POST_NOW_WEATHER_DATA;
+        message.what = Constants.POST_NOW_WEATHER_DATA;
         message.obj = nowResponse;
         mWeatherHandler.sendMessage(message);
     }
@@ -304,7 +301,7 @@ public class WeatherActivity extends AppCompatActivity implements SearchCityRecy
     @Override
     public void lifeConditionDataCallback(LifestyleResponse lifestyleResponse) {
         Message message = mWeatherHandler.obtainMessage();
-        message.what = POST_LIFE_SUGGESTION;
+        message.what = Constants.POST_LIFE_SUGGESTION;
         message.obj = lifestyleResponse;
         mWeatherHandler.sendMessage(message);
     }
@@ -317,7 +314,7 @@ public class WeatherActivity extends AppCompatActivity implements SearchCityRecy
     @Override
     public void airConditionDataCallback(AirNowConditionResponse airNowConditionResponse) {
         Message message = mWeatherHandler.obtainMessage();
-        message.what = POST_AIR_CONDITION_DATA;
+        message.what = Constants.POST_AIR_CONDITION_DATA;
         message.obj = airNowConditionResponse;
         mWeatherHandler.sendMessage(message);
     }
@@ -330,7 +327,7 @@ public class WeatherActivity extends AppCompatActivity implements SearchCityRecy
     @Override
     public void weatherForecastDataCallback(DailyResponse dailyResponse) {
         Message message = mWeatherHandler.obtainMessage();
-        message.what = POST_FORECAST_WEATHER_DATA;
+        message.what = Constants.POST_FORECAST_WEATHER_DATA;
         message.obj = dailyResponse;
         mWeatherHandler.sendMessage(message);
     }
@@ -353,7 +350,7 @@ public class WeatherActivity extends AppCompatActivity implements SearchCityRecy
     @Override
     public void loadImageUrlDataCallback(String url) {
         Message message = mWeatherHandler.obtainMessage();
-        message.what = POST_BACKGROUND_IMAGE;
+        message.what = Constants.POST_BACKGROUND_IMAGE;
         message.obj = url;
         mWeatherHandler.sendMessage(message);
     }
@@ -377,191 +374,5 @@ public class WeatherActivity extends AppCompatActivity implements SearchCityRecy
         EventBus.getDefault().unregister(this);
         super.onDestroy();
     }
-
-
-    private static class WeatherHandler extends Handler {
-
-        // 持有当前 Context 的引用
-        private WeakReference<WeatherActivity> mWeatherActivityWeakReference;
-        private WeatherActivity mMWeatherActivity;
-        // 天气预报
-        private List<DailyResponse.DailyBean> dailyForecastList = new ArrayList<>();
-        private TextView mForecastDate;
-        private TextView mForecastDay;
-        private TextView mForecastNight;
-        private TextView mForecastWinDirection;
-        private TextView mForecastTemperature;
-        // 生活建议
-        private List<LifestyleResponse.DailyBean> dailySuggestionList = new ArrayList<>();
-        private TextView mSuggestText;
-        private TextView mSuggestionLevel;
-        private TextView mSuggestionName;
-
-        public WeatherHandler(WeatherActivity weatherActivity) {
-            mWeatherActivityWeakReference = new WeakReference<>(weatherActivity);
-        }
-
-        /**
-         * 消息进行处理的地方
-         *
-         * @param msg
-         */
-        @Override
-        public void handleMessage(@NonNull Message msg) {
-            super.handleMessage(msg);
-            mMWeatherActivity = mWeatherActivityWeakReference.get();
-            switch (msg.what) {
-                case POST_BACKGROUND_IMAGE:
-                    // 设置背景图片
-                    Glide.with(mWeatherActivityWeakReference.get())
-                            .asBitmap()
-                            .load(msg.obj)
-                            .into(new SimpleTarget<Bitmap>() {
-                                @Override
-                                public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
-                                    Drawable drawable = new BitmapDrawable(resource);
-                                    mWeatherActivityWeakReference.get().mLinearLayout.setBackground(drawable);
-                                }
-                            });
-                    break;
-                case POST_NOW_WEATHER_DATA:
-                    // 设置当前天气数据
-                    handleNowWeatherData((NowResponse) msg.obj);
-                    break;
-                case POST_FORECAST_WEATHER_DATA:
-                    // 设置预报天气数据
-                    handleForecastWeatherData((DailyResponse) msg.obj);
-                    break;
-                case POST_AIR_CONDITION_DATA:
-                    // 空气质量
-                    handleAirConditionData((AirNowConditionResponse) msg.obj);
-                    break;
-                case POST_LIFE_SUGGESTION:
-                    // 生活建议
-                    handleLifeSuggestion((LifestyleResponse) msg.obj);
-                    break;
-            }
-        }
-
-        /**
-         * 生活建议的数据处理
-         *
-         * @param lifestyleResponse
-         */
-        private void handleLifeSuggestion(@NotNull LifestyleResponse lifestyleResponse) {
-            // 处理数据重复的问题
-            this.dailySuggestionList = lifestyleResponse.getDaily();
-            mMWeatherActivity.mLlSuggestion.removeAllViews();
-
-            // 需要对生活建议进行特殊的处理，
-            int suggestionSize = dailySuggestionList.size();
-            if (suggestionSize > 3) {
-                // 超过了3条数据,但是只显示3条数据
-                for (int i = 0; i < 3; i++) {
-                    View view = LayoutInflater.from(mMWeatherActivity).
-                            inflate(R.layout.item_suggestion, null, false);
-                    mSuggestionName = view.findViewById(R.id.tv_suggestion_name);
-                    mSuggestionLevel = view.findViewById(R.id.tv_suggestion_level);
-                    mSuggestText = view.findViewById(R.id.tv_suggestion_text);
-                    // 设置数据
-                    mSuggestionName.setText(lifestyleResponse.getDaily().get(i).getName());
-                    mSuggestionLevel.setText(lifestyleResponse.getDaily().get(i).getCategory());
-                    mSuggestText.setText(lifestyleResponse.getDaily().get(i).getText());
-                    mMWeatherActivity.mLlSuggestion.addView(view);
-                    // 解决每一个 item 的间距问题
-                    TextView m = new TextView(mMWeatherActivity);
-                    m.setHeight(25);
-                    mMWeatherActivity.mLlSuggestion.addView(m);
-                }
-
-            } else {
-                for (int i = 0; i < suggestionSize; i++) {
-                    View view = LayoutInflater.from(mMWeatherActivity).
-                            inflate(R.layout.item_suggestion, null, false);
-                    mSuggestionName = view.findViewById(R.id.tv_suggestion_name);
-                    mSuggestionLevel = view.findViewById(R.id.tv_suggestion_level);
-                    mSuggestText = view.findViewById(R.id.tv_suggestion_text);
-                    // 设置数据
-                    mSuggestionName.setText(lifestyleResponse.getDaily().get(i).getName());
-                    mSuggestionLevel.setText(lifestyleResponse.getDaily().get(i).getCategory());
-                    mSuggestText.setText(lifestyleResponse.getDaily().get(i).getText());
-                    mMWeatherActivity.mLlSuggestion.addView(view);
-                    // 解决每一个 item 的间距问题
-                    TextView m = new TextView(mMWeatherActivity);
-                    m.setHeight(25);
-                    mMWeatherActivity.mLlSuggestion.addView(m);
-                }
-            }
-            // 进入更多的界面
-            mMWeatherActivity.mMoreLifeSuggestion.setOnClickListener((l) -> {
-                if (suggestionSize > 3) {
-                    // TODO:进入生活建议更多的界面
-                } else {
-                    Toast.makeText(mMWeatherActivity, "且行且珍惜,没有更多的生活建议了哦", Toast.LENGTH_SHORT).show();
-                }
-            });
-        }
-
-        /**
-         * 空气质量的处理，这里只有两个数据，更多数据需要点击进行路详情页面
-         *
-         * @param airNowConditionResponse
-         */
-        private void handleAirConditionData(AirNowConditionResponse airNowConditionResponse) {
-            mMWeatherActivity.mTvAqi.setText(airNowConditionResponse.getNow().getAqi());
-            mMWeatherActivity.mTvPm25.setText(airNowConditionResponse.getNow().getPm2p5());
-            mMWeatherActivity.mMoreAirCondition.setOnClickListener((l) -> {
-                //TODO:携带实体数据进入空气质量展示界面
-            });
-        }
-
-        /**
-         * 天气预报UI展示处理
-         *
-         * @param dailyResponse
-         */
-        private void handleForecastWeatherData(DailyResponse dailyResponse) {
-            // 解决数据重复添加的问题
-            this.dailyForecastList = dailyResponse.getDaily();
-            mMWeatherActivity.mForecastWeatherContainer.removeAllViews();
-
-            for (int i = 0; i < dailyForecastList.size(); i++) {
-                View view = LayoutInflater.from(mMWeatherActivity).inflate(R.layout.item_forecast, null, false);
-                mForecastDate = view.findViewById(R.id.tv_forecast_date);
-                mForecastDay = view.findViewById(R.id.tv_forecast_day);
-                mForecastNight = view.findViewById(R.id.tv_forecast_night);
-                mForecastWinDirection = view.findViewById(R.id.tv_forecast_win_direction);
-                mForecastTemperature = view.findViewById(R.id.tv_forecast_temperature);
-                // 设置数据
-                mForecastDate.setText(dailyResponse.getDaily().get(i).getFxDate());
-                mForecastDay.setText(dailyResponse.getDaily().get(i).getTextDay());
-                mForecastNight.setText(dailyResponse.getDaily().get(i).getTextNight());
-                mForecastWinDirection.setText(dailyResponse.getDaily().get(i).getWindDirDay());
-                mForecastTemperature.setText(dailyResponse.getDaily().get(i).getTempMax() + "℃" + "~" + dailyResponse.getDaily().get(i).getTempMin() + "℃");
-                mMWeatherActivity.mForecastWeatherContainer.addView(view);
-            }
-        }
-
-        /**
-         * 更新当前的天气数据
-         *
-         * @param nowResponse
-         */
-        public void handleNowWeatherData(@NotNull NowResponse nowResponse) {
-            // 温度
-            mMWeatherActivity.degreeText.setText(nowResponse.getNow().getTemp() + "℃");
-            // 天气状况
-            mMWeatherActivity.weatherInfoText.setText(nowResponse.getNow().getText());
-            // 风向
-            mMWeatherActivity.mWinDirection.setText(nowResponse.getNow().getWindDir());
-            // 湿度
-            mMWeatherActivity.mHumidity.setText(nowResponse.getNow().getHumidity());
-            // 气压
-            mMWeatherActivity.mAirPressure.setText(nowResponse.getNow().getPressure());
-            // 更新时间
-            mMWeatherActivity.mUpdateTime.setText("更新时间： " + nowResponse.getUpdateTime().substring(11, 16));
-        }
-    }
-
 
 }

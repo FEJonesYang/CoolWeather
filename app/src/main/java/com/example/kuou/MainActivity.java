@@ -25,6 +25,7 @@ import android.view.View;
 import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
+import com.example.kuou.base.Constants;
 import com.example.kuou.common.message.LocationEventMessage;
 import com.example.kuou.common.utils.UIUtil;
 import com.example.kuou.module.weather.WeatherActivity;
@@ -59,7 +60,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        if (Constants.isDebug) {
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
         /// 定位权限的获取
         int hasPermission = ContextCompat.checkSelfPermission(getApplication(), Manifest.permission.ACCESS_FINE_LOCATION);
         if (hasPermission == PackageManager.PERMISSION_GRANTED) {

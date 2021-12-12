@@ -59,4 +59,8 @@ public class Constants {
     public static final int POST_FORECAST_WEATHER_DATA = 3;
     public static final int POST_AIR_CONDITION_DATA = 4;
     public static final int POST_LIFE_SUGGESTION = 5;
+
+    // 是否 DEBUG
+    public static final boolean isDebug = true;
+
 }

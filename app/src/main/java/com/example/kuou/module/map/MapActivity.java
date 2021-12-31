@@ -43,7 +43,7 @@ public class MapActivity extends AppCompatActivity implements AMap.OnMyLocationC
     private static final int POST_CITY_NAME = 2;
 
     private NowResponse nowResponse;
-    private MapWeatherPresenter mapWeatherPresenter = MapWeatherPresenter.getInstance();
+    private MapWeatherPresenter mapWeatherPresenter;
 
     // 视图
     private TextView cityName;
@@ -90,7 +90,8 @@ public class MapActivity extends AppCompatActivity implements AMap.OnMyLocationC
         aMap.setOnMapClickListener(this);
 
         // 数据回调
-        MapWeatherPresenter.getInstance().setMapWeatherListener(this);
+        mapWeatherPresenter = new MapWeatherPresenter();
+        mapWeatherPresenter.setMapWeatherListener(this);
 
         initView();
 

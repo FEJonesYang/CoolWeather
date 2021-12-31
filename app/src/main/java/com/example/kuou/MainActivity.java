@@ -60,31 +60,16 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (Constants.isDebug) {
-            try {
-                Thread.sleep(3000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
         /// 定位权限的获取
         int hasPermission = ContextCompat.checkSelfPermission(getApplication(), Manifest.permission.ACCESS_FINE_LOCATION);
         if (hasPermission == PackageManager.PERMISSION_GRANTED) {
             //已获取权限
             UIUtil.showShortToast(this, "定位权限已获取");
             getLocationAfterPermissionSuccess();
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    Intent intent = new Intent(MainActivity.this, WeatherActivity.class);
-                    startActivity(intent);
-                }
-            }, 3000);
         } else {
             //未获取权限，需要弹出 dialog，这里自定义 View
             initDialogView();
         }
-
     }
 
     /**
@@ -104,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
                 public void run() {
                     finish();
                 }
-            }, 3000);
+            }, 0);
             dialog.dismiss();
         });
         view.findViewById(R.id.btn_sure).setOnClickListener(v -> {
@@ -150,25 +135,20 @@ public class MainActivity extends AppCompatActivity {
 
         //设置定位模式为AMapLocationMode.Hight_Accuracy，高精度模式。
         mLocationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
-
         mLocationListener = (location) -> {
 
             if (location != null) {
                 if (location.getErrorCode() == 0) {
                     //发送粘性事件
                     EventBus.getDefault().postSticky(new LocationEventMessage(location));
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            Intent intent = new Intent(MainActivity.this, WeatherActivity.class);
-                            startActivity(intent);
-                        }
-                    }, 3000);
+                    Intent intent = new Intent(MainActivity.this, WeatherActivity.class);
+                    startActivity(intent);
                 } else {
                     //定位失败时，可通过ErrCode（错误码）信息来确定失败的原因，errInfo是错误信息，详见错误码表。
-                    Log.e("AmapError", "location Error, ErrCode:"
+                    Log.e(TAG, "location Error, ErrCode:"
                             + location.getErrorCode() + ", errInfo:"
                             + location.getErrorInfo());
+
                 }
             }
         };
@@ -182,7 +162,6 @@ public class MainActivity extends AppCompatActivity {
 
         //启动后台定位，第一个参数为通知栏ID，建议整个APP使用一个
         mLocationClient.enableBackgroundLocation(2001, buildNotification());
-
     }
 
     /**

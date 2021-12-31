@@ -63,8 +63,9 @@ dependencies {
     implementation files('libs/AMap3DMap_7.9.1_AMapNavi_7.9.1_AMapSearch_7.9.0_20210414.jar')
     implementation "org.greenrobot:eventbus:3.2.0"
     implementation 'com.android.support:multidex:1.0.3'
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.6.2'
-    releaseImplementation   'com.squareup.leakcanary:leakcanary-android-no-op:1.6.2'
-    // 可选，如果你使用支持库的fragments的话
-    debugImplementation   'com.squareup.leakcanary:leakcanary-support-fragment:1.6.2'
+//    // 用于学习 LeakCanary 的原理
+//    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.6.2'
+//    releaseImplementation   'com.squareup.leakcanary:leakcanary-android-no-op:1.6.2'
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.7'
+    implementation "io.reactivex.rxjava3:rxjava:3.1.3"
 }

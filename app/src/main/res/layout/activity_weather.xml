@@ -12,12 +12,20 @@
         android:layout_height="match_parent"
         android:background="@color/colorPrimary"
         android:fitsSystemWindows="true"
+        android:gravity="center"
         android:orientation="vertical"
         tools:context=".module.weather.WeatherActivity">
 
         <include
             android:id="@+id/include_title"
             layout="@layout/title" />
+
+        <ImageView
+            android:id="@+id/iv_loading_view"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@mipmap/icon_loading"
+            android:visibility="gone" />
 
         <androidx.drawerlayout.widget.DrawerLayout
             android:id="@+id/drawer_layout"
@@ -58,15 +66,6 @@
 
 
                 </ScrollView>
-                <!--空界面以及错误界面-->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-                    <include layout="@layout/error_view" />
-
-                    <include layout="@layout/empty_view" />
-                </LinearLayout>
 
             </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 

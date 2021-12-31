@@ -25,20 +25,7 @@ import okhttp3.Response;
 public class MapWeatherPresenter {
     private static final String TAG = "MapWeatherPresenter";
 
-    private static MapWeatherPresenter instance;
-
-    private MapWeatherPresenter() {
-    }
-
-    public static MapWeatherPresenter getInstance() {
-        if (instance == null) {
-            synchronized (MapWeatherPresenter.class) {
-                if (instance == null) {
-                    instance = new MapWeatherPresenter();
-                }
-            }
-        }
-        return instance;
+    public MapWeatherPresenter() {
     }
 
     /**
@@ -81,7 +68,7 @@ public class MapWeatherPresenter {
         this.mapWeatherListener = mapWeatherListener;
     }
 
-    public static ISendMapWeatherListener mapWeatherListener;
+    public ISendMapWeatherListener mapWeatherListener;
 
     public interface ISendMapWeatherListener {
         void postMapWeatherData(NowResponse nowResponse);

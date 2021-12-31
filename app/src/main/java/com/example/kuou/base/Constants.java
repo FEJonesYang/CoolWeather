@@ -1,7 +1,5 @@
 package com.example.kuou.base;
 
-import java.lang.ref.PhantomReference;
-import java.lang.ref.WeakReference;
 
 /**
  * @author JonesYang
@@ -59,8 +57,10 @@ public class Constants {
     public static final int POST_FORECAST_WEATHER_DATA = 3;
     public static final int POST_AIR_CONDITION_DATA = 4;
     public static final int POST_LIFE_SUGGESTION = 5;
+    // 处理城市搜索数据时，进行线程切换的标志
+    public static final int POST_SEARCH_CITY_DATA = 1;
+    public static final int POST_HOT_CITY_DATA = 2;
 
     // 是否 DEBUG
-    public static final boolean isDebug = true;
-
+    public static final boolean isDebug = false;
 }

@@ -14,10 +14,59 @@
         android:orientation="vertical"
         tools:context=".module.search.SearchCityActivity">
 
+        <!--    标题    -->
         <include
             android:id="@+id/include_search"
             layout="@layout/bar_search_city" />
 
+        <!--    历史词提示   -->
+        <TextView
+            android:id="@+id/tv_showHistory"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/shape_bg_hot_city_item_select"
+            android:paddingLeft="5dp"
+            android:paddingTop="2dp"
+            android:paddingRight="5dp"
+            android:paddingBottom="2dp"
+            android:text="历史记录"
+            android:textSize="16sp"
+            android:visibility="gone" />
+
+        <!--  历史词  -->
+        <LinearLayout
+            android:id="@+id/search_history_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:orientation="vertical" />
+
+        <LinearLayout
+            android:id="@+id/ll_error_empty_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/iv_error_empty"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:src="@mipmap/icon_error_view" />
+
+            <Button
+                android:id="@+id/bt_retry"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="点击重试" />
+
+        </LinearLayout>
+
+
+        <!--    热门城市    -->
         <TextView
             android:id="@+id/tv_showHotCity"
             android:layout_width="wrap_content"
@@ -30,7 +79,8 @@
             android:paddingRight="5dp"
             android:paddingBottom="2dp"
             android:text="热门城市"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:visibility="gone" />
 
         <com.example.kuou.module.search.ui.HotCityFlowLayout
             android:id="@+id/hotCityContainer"

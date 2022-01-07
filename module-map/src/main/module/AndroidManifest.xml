@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.jonesyong.module_map">
+
+    <!--  还应该定义App 图标、名称，但考虑到该应用比较简单，不会做单独调试  -->
+    <application
+        android:name="MapApplication"
+        android:theme="@style/AppTheme"
+        tools:ignore="MissingClass">
+        <!-- 地图显示的  -->
+        <activity
+            android:name=".MapActivity"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.jonesyong.module_map.MapActivity" />
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>

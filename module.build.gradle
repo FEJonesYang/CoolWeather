@@ -1,0 +1,45 @@
+if (isModule.toBoolean()) {
+    // 单独运行，默认为 false
+    apply plugin: 'com.android.application'
+} else {
+    apply plugin: 'com.android.library'
+}
+
+android {
+
+    defaultConfig {
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = [AROUTER_MODULE_NAME: project.getName()]
+            }
+        }
+    }
+
+    buildTypes {
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    sourceSets {
+        main {
+            if (isModule.toBoolean()) {
+                //单独运行
+                manifest.srcFile 'src/main/module/AndroidManifest.xml'
+                java.srcDir 'src/main/module/java'
+            } else {
+                //合并到宿主中
+                manifest.srcFile 'src/main/AndroidManifest.xml'
+                resources {
+                    //正式版本时.剔除debug文件夹下的所有调式文件
+                    exclude 'src/debug/*'
+                }
+            }
+        }
+    }
+}

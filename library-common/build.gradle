@@ -1,0 +1,46 @@
+plugins {
+    id 'com.android.library'
+}
+
+android {
+    compileSdk 31
+
+    defaultConfig {
+
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+        multiDexEnabled true
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    // Android 原生依赖
+    api rootProject.ext.androidx['androidx-appcompat']
+    api rootProject.ext.androidx['androidx.swiperefreshlayout']
+    api rootProject.ext.androidx['android-material']
+    api rootProject.ext.androidx['androidx-constraintlayout']
+    api rootProject.ext.androidx['junit']
+    api rootProject.ext.androidx['androidx.test.ext-junit']
+    api rootProject.ext.androidx['androidx.test.espresso']
+    api rootProject.ext.androidx['annotations']
+
+    // 三方依赖
+    api rootProject.ext.dependencies['glide']
+    api rootProject.ext.dependencies['gson']
+    api rootProject.ext.dependencies['okhttp3']
+    api rootProject.ext.dependencies['eventbus']
+
+    // 阿里路由组件跳转
+    api rootProject.ext.dependencies['arouter-api']
+    annotationProcessor rootProject.ext.dependencies['arouter-compiler']
+    annotationProcessor rootProject.ext.dependencies['glide-compiler']
+
+    // 导入 jar 包，暂时只有高德地图定位
+    api fileTree(dir: 'libs', includes: ['*.jar'])
+}

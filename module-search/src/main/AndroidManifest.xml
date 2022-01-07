@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.jonesyong.module_search">
+
+    <application android:theme="@style/AppTheme">
+
+        <!-- 搜索城市 -->
+        <activity
+            android:name=".SearchCityActivity"
+            android:exported="false"
+            android:launchMode="standard">
+            <intent-filter>
+                <action android:name="com.jonesyong.module_search.SearchCityActivity" />
+            </intent-filter>
+        </activity>
+
+    </application>
+
+</manifest>

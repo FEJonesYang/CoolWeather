@@ -1,2 +1,8 @@
-include ':app'
-rootProject.name='Kuou'
+rootProject.name = 'Kuou'
+include ':app',
+        ':module-detail',
+        ':module-search',
+        ':module-map',
+        ':module-home',
+        ':library-common'
+include ':module-main'

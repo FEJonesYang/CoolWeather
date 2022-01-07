@@ -1,0 +1,40 @@
+apply from:'../module.build.gradle'
+
+android {
+    compileSdk rootProject.ext.android['compileSdkVersion']
+
+    defaultConfig {
+        minSdk rootProject.ext.android['minSdkVersion']
+        targetSdk rootProject.ext.android['targetSdkVersion']
+        versionCode rootProject.ext.android['versionCode']
+        versionName rootProject.ext.android['versionName']
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        if (isModule.toBoolean()) {
+            applicationId "com.jonesyong.module_main"
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    // 视图数据绑定
+    dataBinding {
+        enabled = true
+    }
+}
+
+dependencies {
+    // 阿里路由组件跳转
+    annotationProcessor rootProject.ext.dependencies['arouter-compiler']
+    implementation project(':library-common')
+}

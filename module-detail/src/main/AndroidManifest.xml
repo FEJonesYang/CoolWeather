@@ -5,8 +5,7 @@
     <application android:theme="@style/AppTheme">
         <activity
             android:name=".DetailActivity"
-            android:exported="false">
-        </activity>
+            android:exported="false" />
     </application>
 
 </manifest>

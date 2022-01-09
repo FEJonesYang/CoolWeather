@@ -12,11 +12,11 @@ import com.alibaba.android.arouter.facade.annotation.Route;
 import com.jonesyong.library_common.base.BaseActivity;
 import com.jonesyong.library_common.base.Constants;
 import com.jonesyong.library_common.base.Router;
-import com.jonesyong.library_common.common.net.HttpUtil;
+import com.jonesyong.library_common.net.HttpUtil;
 import com.jonesyong.library_common.model.HotCityResponse;
 import com.jonesyong.library_common.model.SearchCityBean;
 
-@Route(path = Router.module_search_searchCityActivity)
+@Route(path = Router.MODULE_SEARCH_SEARCH_ACTIVITY)
 public class SearchCityActivity extends BaseActivity implements SearchCityPresenter.ISendSearchCityListener {
 
     private static final String TAG = "SearchCityActivity";

@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <!-- 自定义热门城市的属性  -->
-    <declare-styleable name="HotCityFlowLayout">
-        <attr name="horizontal_spacing" format="dimension" />
-        <attr name="vertical_spacing" format="dimension" />
-    </declare-styleable>
-</resources>

@@ -14,10 +14,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.android.arouter.launcher.ARouter;
 import com.jonesyong.library_common.base.Router;
-import com.jonesyong.library_common.common.message.SearchCityEvent;
+import com.jonesyong.library_common.message.SearchCityEvent;
 import com.jonesyong.library_common.model.SearchCityBean;
 import com.jonesyong.module_search.R;
-import com.jonesyong.module_search.SearchCityActivity;
 import com.jonesyong.module_search.database.HistoryWordDatabaseManager;
 
 import org.greenrobot.eventbus.EventBus;
@@ -78,7 +77,7 @@ public class SearchCityRecycleViewAdapter extends RecyclerView.Adapter<SearchCit
                 mDatabaseManager.insert(contentValues);
             }
             EventBus.getDefault().post(new SearchCityEvent(location));
-            ARouter.getInstance().build(Router.module_home_weatherActivity).navigation();
+            ARouter.getInstance().build(Router.MODULE_HOME_WEATHER_ACTIVITY).navigation();
         });
         holder.reFreshData(mCityList.get(position));
     }

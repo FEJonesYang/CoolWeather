@@ -55,11 +55,17 @@
 
                         <include layout="@layout/now" />
 
-                        <include layout="@layout/forecast" />
+                        <include
+                            android:id="@+id/include_aqi"
+                            layout="@layout/aqi" />
 
-                        <include layout="@layout/aqi" />
+                        <include
+                            android:id="@+id/include_forecast"
+                            layout="@layout/forecast" />
 
-                        <include layout="@layout/suggestion" />
+                        <include
+                            android:id="@+id/include_suggestion"
+                            layout="@layout/suggestion" />
 
                     </LinearLayout>
 

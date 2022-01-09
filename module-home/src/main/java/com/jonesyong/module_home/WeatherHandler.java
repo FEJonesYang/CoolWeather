@@ -149,14 +149,6 @@ public class WeatherHandler extends Handler {
                 mMWeatherActivity.mLlSuggestion.addView(m);
             }
         }
-        // 进入更多的界面
-        mMWeatherActivity.mMoreLifeSuggestion.setOnClickListener((l) -> {
-            if (suggestionSize > 3) {
-                // TODO:进入生活建议更多的界面
-            } else {
-                Toast.makeText(mMWeatherActivity, "且行且珍惜,没有更多的生活建议了哦", Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 
     /**
@@ -170,9 +162,6 @@ public class WeatherHandler extends Handler {
         }
         mMWeatherActivity.mTvAqi.setText(airNowConditionResponse.getNow().getAqi());
         mMWeatherActivity.mTvPm25.setText(airNowConditionResponse.getNow().getPm2p5());
-        mMWeatherActivity.mMoreAirCondition.setOnClickListener((l) -> {
-            //TODO:携带实体数据进入空气质量展示界面
-        });
     }
 
     /**

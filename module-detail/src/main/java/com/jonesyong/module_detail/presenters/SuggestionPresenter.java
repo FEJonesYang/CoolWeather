@@ -1,11 +1,12 @@
-package com.jonesyong.module_detail;
+package com.jonesyong.module_detail.presenters;
 
 import android.util.Log;
 
-import org.junit.Test;
-
+import com.jonesyong.library_common.base.BasePresenter;
 import com.jonesyong.library_common.model.LifestyleResponse;
 import com.jonesyong.library_common.net.HttpUtil;
+import com.jonesyong.module_detail.adapter.SuggestionRecyclerAdapter;
+import com.jonesyong.module_detail.fragments.SuggestionFragment;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Observable;
@@ -13,24 +14,26 @@ import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
-
 /**
- * Example local unit test, which will execute on the development machine (host).
- *
- * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
+ * @Author JonesYang
+ * @Date 2022-01-09
+ * @Description 处理生活建议的
  */
-public class ExampleUnitTest {
+public class SuggestionPresenter extends BasePresenter {
 
-    public static final String TAG = "ExampleUnitTest";
+    private SuggestionFragment mSuggestionFragment;
+
+    public SuggestionPresenter(SuggestionFragment suggestionFragment) {
+        mSuggestionFragment = suggestionFragment;
+    }
 
     /**
-     * 生活建议单元测试
+     * 获取生活建议的网络数据
      *
-     * @throws
+     * @param location
      */
-    @Test
-    public void suggestionIsCorrect() {
-        Observable<LifestyleResponse> observable = HttpUtil.buildService("https://devapi.qweather.com/").getSuggestResult("101010100");
+    public void getSuggestionData(String location) {
+        Observable<LifestyleResponse> observable = HttpUtil.getDevService().getSuggestResult(location);
         observable.observeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<LifestyleResponse>() {
@@ -41,12 +44,15 @@ public class ExampleUnitTest {
 
                     @Override
                     public void onNext(@io.reactivex.rxjava3.annotations.NonNull LifestyleResponse lifestyleResponse) {
-                        Log.d(TAG,"Succeed");
+                        if (lifestyleResponse.getDaily() == null || lifestyleResponse.getDaily().isEmpty()) {
+                            mSuggestionFragment.showEmptyPage();
+                        }
+                        mSuggestionFragment.initData(lifestyleResponse);
                     }
 
                     @Override
                     public void onError(@io.reactivex.rxjava3.annotations.NonNull Throwable e) {
-
+                        mIPageStatus.showErrorPage();
                     }
 
                     @Override
@@ -54,6 +60,5 @@ public class ExampleUnitTest {
 
                     }
                 });
-
     }
 }

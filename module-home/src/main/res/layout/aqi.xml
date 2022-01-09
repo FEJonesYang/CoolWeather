@@ -6,6 +6,7 @@
     </data>
 
     <LinearLayout
+        android:descendantFocusability="blocksDescendants"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="15dp"
@@ -19,6 +20,7 @@
             android:orientation="horizontal">
 
             <TextView
+                android:id="@+id/tv_aqi_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="9dp"
@@ -26,31 +28,6 @@
                 android:text="空气质量"
                 android:textColor="#fff"
                 android:textSize="20sp" />
-
-            <LinearLayout
-                android:id="@+id/ll_more_weather_aqi"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_marginTop="15sp"
-                android:layout_marginRight="9dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="更多"
-                    android:textColor="#fff"
-                    android:textSize="15sp" />
-
-                <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:src="@drawable/icon_arrow_right" />
-
-            </LinearLayout>
-
 
         </RelativeLayout>
 

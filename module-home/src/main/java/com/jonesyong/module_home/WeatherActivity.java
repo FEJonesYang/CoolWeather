@@ -4,9 +4,9 @@ import androidx.databinding.DataBindingUtil;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -20,16 +20,16 @@ import com.amap.api.location.AMapLocation;
 import com.jonesyong.library_common.base.BaseActivity;
 import com.jonesyong.library_common.base.Constants;
 import com.jonesyong.library_common.base.Router;
-import com.jonesyong.library_common.common.message.HotCityEventMessage;
-import com.jonesyong.library_common.common.message.LocationEventMessage;
-import com.jonesyong.library_common.common.message.SearchCityEvent;
-import com.jonesyong.library_common.common.net.HttpUtil;
-import com.jonesyong.library_common.common.utils.UIUtil;
+import com.jonesyong.library_common.message.HotCityEventMessage;
+import com.jonesyong.library_common.message.LocationEventMessage;
+import com.jonesyong.library_common.message.SearchCityEvent;
+import com.jonesyong.library_common.net.HttpUtil;
+import com.jonesyong.library_common.utils.ARouterUtils;
+import com.jonesyong.library_common.utils.UIUtil;
 import com.jonesyong.library_common.model.AirNowConditionResponse;
 import com.jonesyong.library_common.model.DailyResponse;
 import com.jonesyong.library_common.model.LifestyleResponse;
 import com.jonesyong.library_common.model.NowResponse;
-import com.jonesyong.library_common.model.SearchCityBean;
 import com.jonesyong.library_common.model.WarmNowCityListResponse;
 import com.jonesyong.library_common.model.WarmNowResponse;
 import com.jonesyong.module_home.databinding.ActivityWeatherBinding;
@@ -40,7 +40,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-@Route(path = Router.module_home_weatherActivity)
+@Route(path = Router.MODULE_HOME_WEATHER_ACTIVITY)
 public class WeatherActivity extends BaseActivity implements WeatherDataCallback {
 
     private static final String TAG = "WeatherActivity";
@@ -82,9 +82,8 @@ public class WeatherActivity extends BaseActivity implements WeatherDataCallback
     public LinearLayout mForecastWeatherContainer;
     public TextView mTvAqi;
     public TextView mTvPm25;
-    public LinearLayout mMoreAirCondition;
     public LinearLayout mLlSuggestion;
-    public LinearLayout mMoreLifeSuggestion;
+    private LinearLayout mMoreLifeSuggestion;
     public TextView titleCity;
     private ImageView mLoadingView;
 
@@ -126,7 +125,7 @@ public class WeatherActivity extends BaseActivity implements WeatherDataCallback
         navMap.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                ARouter.getInstance().build(Router.module_map_mapActivity).navigation();
+                ARouterUtils.navigationToMap();
                 // 返回true，不再触发单次点击的事件
                 return true;
             }
@@ -142,9 +141,17 @@ public class WeatherActivity extends BaseActivity implements WeatherDataCallback
         });
 
         mActivityWeatherBinding.includeTitle.ivMoreChoose.setOnClickListener((view) -> {
-            ARouter.getInstance().build(Router.module_search_searchCityActivity).navigation();
+            ARouterUtils.navigationToSearch();
         });
 
+        // 更多生活建议
+        mMoreLifeSuggestion.setOnClickListener(v -> {
+            Log.d(TAG, this.locationId);
+            ARouter.getInstance().build(Router.MODULE_DETAIL_DETAIL_ACTIVITY)
+                    .withString("location",this.locationId)
+                    .withString("cityName", this.cityName)
+                    .navigation();
+        });
     }
 
     @Override
@@ -157,14 +164,6 @@ public class WeatherActivity extends BaseActivity implements WeatherDataCallback
      * 获取天气的数据
      */
     private void getWeatherData() {
-        // 网络状况判断
-        if (!HttpUtil.isNetWorkConnection(this)) {
-            weatherLayout.setVisibility(View.GONE);
-            return;
-        } else {
-            weatherLayout.setVisibility(View.VISIBLE);
-            UIUtil.hideErrorView(this);
-        }
         // 背景图片
         mWeatherPresenter.requestBackgroundImage();
         // 实时天气数据
@@ -222,11 +221,10 @@ public class WeatherActivity extends BaseActivity implements WeatherDataCallback
         // 生活质量,这里只有 aqi 和 pm2.5
         mTvAqi = findViewById(R.id.tv_api);
         mTvPm25 = findViewById(R.id.tv_pm25);
-        mMoreAirCondition = findViewById(R.id.ll_more_weather_aqi);
 
         // 生活建议的布局
         mLlSuggestion = findViewById(R.id.ll_suggestion_container);
-        mMoreLifeSuggestion = findViewById(R.id.ll_more_weather_suggestion);
+        mMoreLifeSuggestion = mActivityWeatherBinding.includeSuggestion.llMoreWeatherSuggestion;
 
 
         //更新天气的处理逻辑

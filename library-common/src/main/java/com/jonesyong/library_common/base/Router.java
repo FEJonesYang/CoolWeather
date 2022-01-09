@@ -6,9 +6,11 @@ package com.jonesyong.library_common.base;
  * @Description 组件的路由协议
  */
 public class Router {
-    public static final String module_search_searchCityActivity = "/module_search/SearchCityActivity";
+    public static final String MODULE_SEARCH_SEARCH_ACTIVITY = "/module_search/SearchCityActivity";
 
-    public static final String module_home_weatherActivity = "/module_home/WeatherActivity";
+    public static final String MODULE_HOME_WEATHER_ACTIVITY = "/module_home/WeatherActivity";
 
-    public static final String module_map_mapActivity = "/module_map/MapActivity";
+    public static final String MODULE_MAP_MAP_ACTIVITY = "/module_map/MapActivity";
+
+    public static final String MODULE_DETAIL_DETAIL_ACTIVITY = "/module_detail/DetailActivity";
 }

@@ -28,7 +28,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.lang.ref.WeakReference;
 
-@Route(path = Router.module_map_mapActivity)
+@Route(path = Router.MODULE_MAP_MAP_ACTIVITY)
 public class MapActivity extends AppCompatActivity implements AMap.OnMyLocationChangeListener, AMap.OnMapClickListener, MapWeatherPresenter.ISendMapWeatherListener {
 
     /// 地图相关的

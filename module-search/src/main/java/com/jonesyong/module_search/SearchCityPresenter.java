@@ -2,7 +2,6 @@ package com.jonesyong.module_search;
 
 import android.annotation.SuppressLint;
 import android.content.ContentValues;
-import android.content.Intent;
 import android.database.Cursor;
 import android.os.Build;
 import android.text.Editable;
@@ -25,10 +24,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.android.arouter.launcher.ARouter;
 import com.jonesyong.library_common.base.Router;
-import com.jonesyong.library_common.common.json.Utility;
-import com.jonesyong.library_common.common.message.HotCityEventMessage;
-import com.jonesyong.library_common.common.net.Api;
-import com.jonesyong.library_common.common.net.HttpUtil;
+import com.jonesyong.library_common.json.Utility;
+import com.jonesyong.library_common.message.HotCityEventMessage;
+import com.jonesyong.library_common.net.Api;
+import com.jonesyong.library_common.net.HttpUtil;
 import com.jonesyong.module_search.adapter.SearchCityRecycleViewAdapter;
 import com.jonesyong.module_search.database.HistoryWordDatabaseManager;
 import com.jonesyong.module_search.database.SearchHistoryDataBaseHelper;
@@ -146,7 +145,7 @@ public class SearchCityPresenter {
                 childView.setBackground(mSearchCityActivity.getDrawable(R.drawable.shape_bg_hot_city_item_select));
                 HotCityEventMessage hotCityEventMessage = new HotCityEventMessage(hotCityResponse, index);
                 EventBus.getDefault().post(hotCityEventMessage);
-                ARouter.getInstance().build(Router.module_home_weatherActivity).navigation();
+                ARouter.getInstance().build(Router.MODULE_HOME_WEATHER_ACTIVITY).navigation();
             });
             hotCityFlowLayout.addView(childView);
         }
@@ -158,7 +157,7 @@ public class SearchCityPresenter {
         mScrollView = mCityBinding.scrollCity;
         // 返回按钮
         mCityBinding.includeSearch.btnBack.setOnClickListener((l) -> {
-            ARouter.getInstance().build(Router.module_home_weatherActivity).navigation();
+            ARouter.getInstance().build(Router.MODULE_HOME_WEATHER_ACTIVITY).navigation();
         });
         // 输入框
         mEditText = mCityBinding.includeSearch.etInputCity;

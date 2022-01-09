@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#008577</color>
-    <color name="colorPrimaryDark">#00574B</color>
+    <color name="purple_500">#008577</color>
+    <color name="purple_700">#00574B</color>
     <color name="colorAccent">#D81B60</color>
-    <color name="hotCity">#fcf1d2</color>
-    <color name="common_white">#FFFFFF</color>
-    <color name="common_black">#000000</color>
-    <color name="common_gray">#cfcfcf</color>
+    <color name="teal_200">#fcf1d2</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="teal_700">#cfcfcf</color>
 </resources>

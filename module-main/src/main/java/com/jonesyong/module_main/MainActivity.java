@@ -26,8 +26,8 @@ import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
 import com.jonesyong.library_common.base.Router;
-import com.jonesyong.library_common.common.message.LocationEventMessage;
-import com.jonesyong.library_common.common.utils.UIUtil;
+import com.jonesyong.library_common.message.LocationEventMessage;
+import com.jonesyong.library_common.utils.UIUtil;
 
 import org.greenrobot.eventbus.EventBus;
 import org.jetbrains.annotations.NotNull;
@@ -141,7 +141,8 @@ public class MainActivity extends AppCompatActivity {
                     //发送粘性事件
                     LocationEventMessage locationEventMessage = new LocationEventMessage(location);
                     EventBus.getDefault().postSticky(locationEventMessage);
-                    ARouter.getInstance().build(Router.module_home_weatherActivity).navigation();
+                    ARouter.getInstance().build(Router.MODULE_HOME_WEATHER_ACTIVITY).navigation();
+                    finish();
                 } else {
                     //定位失败时，可通过ErrCode（错误码）信息来确定失败的原因，errInfo是错误信息，详见错误码表。
                     Log.e(TAG, "location Error, ErrCode:"

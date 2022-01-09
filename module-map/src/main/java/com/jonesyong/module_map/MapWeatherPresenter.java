@@ -3,9 +3,9 @@ package com.jonesyong.module_map;
 import android.annotation.SuppressLint;
 import android.util.Log;
 
-import com.jonesyong.library_common.common.json.Utility;
-import com.jonesyong.library_common.common.net.Api;
-import com.jonesyong.library_common.common.net.HttpUtil;
+import com.jonesyong.library_common.json.Utility;
+import com.jonesyong.library_common.net.Api;
+import com.jonesyong.library_common.net.HttpUtil;
 import com.jonesyong.library_common.model.NowResponse;
 import com.jonesyong.library_common.model.SearchCityBean;
 

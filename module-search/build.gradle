@@ -5,8 +5,8 @@ android {
     defaultConfig {
         minSdk rootProject.ext.android['minSdkVersion']
         targetSdk rootProject.ext.android['targetSdkVersion']
-        versionCode 1
-        versionName "1.0"
+        versionCode rootProject.ext.android['versionCode']
+        versionName rootProject.ext.android['versionName']
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -41,5 +41,4 @@ dependencies {
     annotationProcessor rootProject.ext.dependencies['arouter-compiler']
 
     implementation project(':library-common')
-    implementation project(':module-home')
 }

@@ -28,15 +28,6 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:src="@mipmap/icon_arrow_right"
-        android:layout_marginRight="16dp"
-        app:layout_constraintBottom_toBottomOf="@id/iv_cityIcon"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <ImageView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingLeft="16dp"

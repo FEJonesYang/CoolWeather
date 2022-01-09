@@ -2,9 +2,9 @@ package com.jonesyong.module_home.presenter;
 
 import android.util.Log;
 
-import com.jonesyong.library_common.common.json.Utility;
-import com.jonesyong.library_common.common.net.Api;
-import com.jonesyong.library_common.common.net.HttpUtil;
+import com.jonesyong.library_common.json.Utility;
+import com.jonesyong.library_common.net.Api;
+import com.jonesyong.library_common.net.HttpUtil;
 import com.jonesyong.library_common.model.AirNowConditionResponse;
 import com.jonesyong.library_common.model.BackgroundImageData;
 import com.jonesyong.library_common.model.DailyResponse;
@@ -108,25 +108,6 @@ public class WeatherPresenter {
     }
 
     /**
-     * 发起请求天气预报的请求--7Day
-     */
-    public void requestForecast7DayData(String locationId) {
-
-        HttpUtil.sendOkHttpRequest(Api.forecast7Day + locationId, new Callback() {
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                Log.d(TAG, e.getMessage());
-            }
-
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                DailyResponse dailyResponse = Utility.getGsonInstance().fromJson(response.body().string(), DailyResponse.class);
-                mWeatherDataCallback.weatherForecastDataCallback(dailyResponse);
-            }
-        });
-    }
-
-    /**
      * 发起请求生活指数
      */
     public void requestLifeConditionData(String locationId) {
@@ -169,40 +150,6 @@ public class WeatherPresenter {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
 
-            }
-
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-
-            }
-        });
-    }
-
-    /**
-     * 发起历史天气数据的查询
-     */
-    public void requestHistoryWeatherData() {
-        HttpUtil.sendOkHttpRequest(Api.historyWeather, new Callback() {
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-
-            }
-
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-
-            }
-        });
-    }
-
-    /**
-     * 发起历史空气质量数据的查询
-     */
-    public void requestHistoryAirConditionData() {
-        HttpUtil.sendOkHttpRequest(Api.historyAirCondition, new Callback() {
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                Log.d(TAG, e.getMessage());
             }
 
             @Override

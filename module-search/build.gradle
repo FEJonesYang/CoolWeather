@@ -36,7 +36,6 @@ android {
 }
 
 dependencies {
-
     // 阿里路由组件跳转
     annotationProcessor rootProject.ext.dependencies['arouter-compiler']
 

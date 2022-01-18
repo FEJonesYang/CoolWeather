@@ -58,7 +58,6 @@
    - 获取必应天气壁纸
    - 手动更新天气
    - 手动切换城市
-   - 后台自动更新天气
    - 修改图标和名称
 
 
@@ -69,7 +68,7 @@
 
 - 图片加载框架：Glide
 - JSON解析框架：Gson
-- 网络访问框架：OKHttp3
+- 网络访问框架：OKHttp3、Retrofit
 - 事件传递机制：EventBus
 
 2. 收获
@@ -83,9 +82,9 @@
 
 1. **项目结构图**
 
-   - 项目结构图
+   - 项目结构图（组件化）
 
-     <img src="https://tva1.sinaimg.cn/large/008i3skNly1grgcwd62rpj30io0t0ahq.jpg" style="zoom:33%;" />
+<img src="https://tva1.sinaimg.cn/large/008i3skNly1gydbapzyq5j30ls0zowha.jpg" alt="截屏2021-06-13 10.05.57" style="zoom:50%;" />
 
    - 流程图
 
@@ -241,35 +240,28 @@
 
 ## 四、功能实现概述
 
-### 1、 实现闪屏界面
-
-- 使用 Handler 发送一个延时的任务，启动主界面，这样就实现了闪屏界面，具体代如下：
-
-          new Handler().postDelayed(new Runnable() {        @Override        public void run() {            Intent intent = new Intent(MainActivity.this, WeatherActivity.class);            startActivity(intent);        }    }, 5000);
-
-- 避免出现白屏的现象
-
-  - 在 style.xml 创建一个 style
-
-    ```xml
-    <style name="SplashTheme" parent="Theme.AppCompat.NoActionBar">    <item name="android:windowBackground">@mipmap/icon_flash</item></style>
-    ```
-
-  - 在 AndroidManifest.xml 中为这个Activity 指定一个theme
-
-    ```xml
-    android:theme="@style/SplashTheme"
-    ```
-
-
-
-###  2、定位功能实现
+###  1、定位功能实现
 
 在 Application 中的 onCreate() ，获取到当前的经度纬度，然后通过 EventBus 发送粘性事件，把获取到的数据传递给展示天气信息的界面。这个是时候 WeatehrActivity 还有创建，所以需要发布粘性事件。配置方面根据高德地图提供的示例进行配置，下面看看它是如何发布事件：
 
 ```java
-        mLocationListener = (location) -> {            if (location != null) {                if (location.getErrorCode() == 0) {                    //发送粘性事件,在展示天气数据的 WeatehrActivity 创建之后就会接收该数据，执行网络数据的获取                    EventBus.getDefault().postSticky(new LocationEventMessage(location));                } else {                    //定位失败时，可通过ErrCode（错误码）信息来确定失败的原因，errInfo是错误信息，详见错误码表。                    Log.e("AmapError", "location Error, ErrCode:"                            + location.getErrorCode() + ", errInfo:"                            + location.getErrorInfo());                }            }        };
+        mLocationListener = (location) -> {
+            if (location != null) {
+                if (location.getErrorCode() == 0) {
+                    //获取定位信息成功
+                } else {
+                    //定位失败时，可通过ErrCode（错误码）信息来确定失败的原因，errInfo是错误信息，详见错误码表。
+                    Log.e(TAG, "location Error, ErrCode:"
+                            + location.getErrorCode() + ", errInfo:"
+                            + location.getErrorInfo());
+
+                }
+            }
+        };
 ```
+### 2、搜索数据持久化
+
+在搜索模块使用了数据 SQLite 进行数据持久化处理。
 
 
 

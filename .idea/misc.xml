@@ -9,6 +9,7 @@
       <map>
         <entry key="app/src/main/res/drawable/bg_search_city.xml" value="0.2713541666666667" />
         <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.3871794871794872" />
+        <entry key="app/src/main/res/drawable/logo_background.xml" value="0.5459652706843718" />
         <entry key="app/src/main/res/drawable/shape_bg_button.xml" value="0.2713541666666667" />
         <entry key="app/src/main/res/drawable/shape_bg_dialog.xml" value="0.26615384615384613" />
         <entry key="app/src/main/res/drawable/shape_bg_hot_city_item_select.xml" value="0.2713541666666667" />
@@ -29,6 +30,8 @@
         <entry key="app/src/main/res/layout/title.xml" value="0.2552083333333333" />
         <entry key="app/src/main/res/layout/widget_view_dialog.xml" value="0.25" />
         <entry key="app/src/main/res/menu/pop_menu.xml" value="0.2552083333333333" />
+        <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.32116342301986095" />
+        <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.25280898876404495" />
         <entry key="app/src/main/res/mipmap-anydpi-v26/logo.xml" value="0.2671794871794872" />
         <entry key="library-common/src/main/res/layout/empty_view.xml" value="0.24114583333333334" />
         <entry key="library-common/src/main/res/layout/error_view.xml" value="0.21197916666666666" />
@@ -41,20 +44,30 @@
         <entry key="module-detail/src/main/res/layout/title.xml" value="0.3770833333333333" />
         <entry key="module-home/src/main/res/drawable/shape_bg_shadow.xml" value="0.24322916666666666" />
         <entry key="module-home/src/main/res/drawable/shape_item_suggestion.xml" value="0.33" />
-        <entry key="module-home/src/main/res/layout/activity_weather.xml" value="0.22314814814814815" />
+        <entry key="module-home/src/main/res/layout/activity_weather.xml" value="0.33" />
         <entry key="module-home/src/main/res/layout/aqi.xml" value="0.3770833333333333" />
         <entry key="module-home/src/main/res/layout/forecast.xml" value="0.3770833333333333" />
+        <entry key="module-home/src/main/res/layout/fragment_home.xml" value="0.3770833333333333" />
+        <entry key="module-home/src/main/res/layout/fragment_warn_city_info.xml" value="0.3770833333333333" />
+        <entry key="module-home/src/main/res/layout/fragment_warn_city_list.xml" value="0.3770833333333333" />
         <entry key="module-home/src/main/res/layout/item_forecast.xml" value="0.22708333333333333" />
         <entry key="module-home/src/main/res/layout/item_suggestion.xml" value="0.22708333333333333" />
+        <entry key="module-home/src/main/res/layout/item_warn_city_list.xml" value="0.3770833333333333" />
         <entry key="module-home/src/main/res/layout/now.xml" value="0.22708333333333333" />
         <entry key="module-home/src/main/res/layout/suggestion.xml" value="0.5" />
         <entry key="module-home/src/main/res/layout/title.xml" value="0.2552083333333333" />
+        <entry key="module-main/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.24010416666666667" />
+        <entry key="module-main/src/main/res/drawable/ic_launcher_background.xml" value="0.25280898876404495" />
         <entry key="module-main/src/main/res/drawable/shape_bg_button.xml" value="0.3871794871794872" />
         <entry key="module-main/src/main/res/drawable/shape_bg_dialog.xml" value="0.3871794871794872" />
+        <entry key="module-main/src/main/res/drawable/splash.xml" value="0.5286006128702758" />
+        <entry key="module-main/src/main/res/layout/activity_main.xml" value="0.4915013632345285" />
+        <entry key="module-main/src/main/res/layout/activity_splash.xml" value="0.51875" />
         <entry key="module-main/src/main/res/layout/widget_view_dialog.xml" value="0.36354166666666665" />
         <entry key="module-main/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.1765625" />
+        <entry key="module-main/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.25280898876404495" />
         <entry key="module-map/src/main/res/drawable/shape_bg_map_information.xml" value="0.37916666666666665" />
-        <entry key="module-map/src/main/res/layout/activity_map.xml" value="0.49663299663299665" />
+        <entry key="module-map/src/main/res/layout/activity_map.xml" value="0.25" />
         <entry key="module-map/src/main/res/layout/item_map_information_container.xml" value="0.24114583333333334" />
         <entry key="module-search/src/main/res/drawable/bg_search_city.xml" value="0.25333333333333335" />
         <entry key="module-search/src/main/res/drawable/shape_bg_hot_city_item.xml" value="0.25333333333333335" />

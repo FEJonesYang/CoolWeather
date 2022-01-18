@@ -3,16 +3,20 @@
     package="com.jonesyong.module_main">
 
     <application>
-
         <!-- 应用启动的主界面 -->
         <activity
-            android:name="com.jonesyong.module_main.MainActivity"
-            android:exported="true">
+            android:name=".MainActivity"
+            android:exported="true"
+            android:theme="@style/splashTheme">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
+        <service android:name=".LocationService" />
     </application>
+
 </manifest>

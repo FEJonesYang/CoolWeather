@@ -15,7 +15,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.alibaba.android.arouter.launcher.ARouter;
 import com.jonesyong.library_common.base.Router;
 import com.jonesyong.library_common.message.SearchCityEvent;
-import com.jonesyong.library_common.model.SearchCityBean;
+import com.jonesyong.library_common.model.LocationModel;
+import com.jonesyong.library_common.model.Response;
 import com.jonesyong.module_search.R;
 import com.jonesyong.module_search.database.HistoryWordDatabaseManager;
 
@@ -32,13 +33,9 @@ import java.util.List;
 public class SearchCityRecycleViewAdapter extends RecyclerView.Adapter<SearchCityRecycleViewAdapter.InnerViewHolder> {
 
     private static final String TAG = "SearchCityRecycleViewAdapter";
-    List<SearchCityBean.LocationBean> mCityList = new ArrayList<>();
+    List<LocationModel> mCityList = new ArrayList<>();
     Context mContext;
-    private HistoryWordDatabaseManager mDatabaseManager;
-
-    public SearchCityRecycleViewAdapter(Context context) {
-        mContext = context;
-    }
+    private final HistoryWordDatabaseManager mDatabaseManager;
 
     public SearchCityRecycleViewAdapter(Context context, HistoryWordDatabaseManager databaseManager) {
         this.mDatabaseManager = databaseManager;
@@ -68,7 +65,7 @@ public class SearchCityRecycleViewAdapter extends RecyclerView.Adapter<SearchCit
         holder.itemView.setTag(position);
         // 单个item的点击事件
         holder.itemView.setOnClickListener((l) -> {
-            SearchCityBean.LocationBean location = mCityList.get(position);
+            LocationModel location = mCityList.get(position);
             // 如果数据库中不存在相同的 key ，则进行插入操作
             if (!mDatabaseManager.isExitKey(location.getName())) {
                 ContentValues contentValues = new ContentValues();
@@ -88,28 +85,26 @@ public class SearchCityRecycleViewAdapter extends RecyclerView.Adapter<SearchCit
     }
 
     @SuppressLint("LongLogTag")
-    public void setSearchCityData(SearchCityBean searchCityBean) {
-        if (searchCityBean != null && searchCityBean.getLocation() != null) {
-            Log.d(TAG, searchCityBean.toString());
+    public void setSearchCityData(Response response) {
+        if (response != null && response.getLocation() != null) {
+            Log.d(TAG, response.toString());
             if (mCityList.size() > 0) {
                 mCityList.clear();
             }
-            mCityList.addAll(searchCityBean.getLocation());
+            mCityList.addAll(response.getLocation());
             notifyDataSetChanged();
         }
     }
 
-    public class InnerViewHolder extends RecyclerView.ViewHolder {
-
-        private TextView mTextView;
+    public static class InnerViewHolder extends RecyclerView.ViewHolder {
 
         public InnerViewHolder(@NonNull View itemView) {
             super(itemView);
         }
 
-        public void reFreshData(SearchCityBean.LocationBean locationBean) {
-            mTextView = itemView.findViewById(R.id.tv_cityName);
-            mTextView.setText(locationBean.getName());
+        public void reFreshData(LocationModel locationBean) {
+            TextView textView = itemView.findViewById(R.id.tv_cityName);
+            textView.setText(locationBean.getName());
         }
     }
 

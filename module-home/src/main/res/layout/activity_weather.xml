@@ -19,64 +19,46 @@
             android:id="@+id/include_title"
             layout="@layout/title" />
 
-        <ImageView
-            android:id="@+id/iv_loading_view"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:src="@mipmap/icon_loading"
-            android:visibility="gone" />
 
-        <androidx.drawerlayout.widget.DrawerLayout
-            android:id="@+id/drawer_layout"
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipe_refresh"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-
-            <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-                android:id="@+id/swipe_refresh"
+            <ScrollView
+                android:id="@+id/weather_layout"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:overScrollMode="never"
+                android:scrollbars="none">
 
-
-                <ScrollView
-                    android:id="@+id/weather_layout"
+                <LinearLayout
+                    android:id="@+id/ll_content_container"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:overScrollMode="never"
-                    android:scrollbars="none">
+                    android:layout_height="wrap_content"
+                    android:fitsSystemWindows="true"
+                    android:orientation="vertical">
 
-                    <LinearLayout
-                        android:id="@+id/ll_content_container"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:fitsSystemWindows="true"
-                        android:orientation="vertical">
+                    <include layout="@layout/now" />
 
+                    <include
+                        android:id="@+id/include_aqi"
+                        layout="@layout/aqi" />
 
-                        <include layout="@layout/now" />
+                    <include
+                        android:id="@+id/include_forecast"
+                        layout="@layout/forecast" />
 
-                        <include
-                            android:id="@+id/include_aqi"
-                            layout="@layout/aqi" />
+                    <include
+                        android:id="@+id/include_suggestion"
+                        layout="@layout/suggestion" />
 
-                        <include
-                            android:id="@+id/include_forecast"
-                            layout="@layout/forecast" />
-
-                        <include
-                            android:id="@+id/include_suggestion"
-                            layout="@layout/suggestion" />
-
-                    </LinearLayout>
+                </LinearLayout>
 
 
-                </ScrollView>
+            </ScrollView>
 
-            </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-
-
-        </androidx.drawerlayout.widget.DrawerLayout>
-
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     </LinearLayout>
 </layout>

@@ -4,77 +4,54 @@ import androidx.databinding.DataBindingUtil;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.annotation.SuppressLint;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.Message;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.alibaba.android.arouter.facade.annotation.Autowired;
 import com.alibaba.android.arouter.facade.annotation.Route;
 import com.alibaba.android.arouter.launcher.ARouter;
-import com.amap.api.location.AMapLocation;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.jonesyong.library_common.base.BaseActivity;
-import com.jonesyong.library_common.base.Constants;
 import com.jonesyong.library_common.base.Router;
 import com.jonesyong.library_common.message.HotCityEventMessage;
-import com.jonesyong.library_common.message.LocationEventMessage;
 import com.jonesyong.library_common.message.SearchCityEvent;
-import com.jonesyong.library_common.net.HttpUtil;
 import com.jonesyong.library_common.utils.ARouterUtils;
-import com.jonesyong.library_common.utils.UIUtil;
-import com.jonesyong.library_common.model.AirNowConditionResponse;
-import com.jonesyong.library_common.model.DailyResponse;
-import com.jonesyong.library_common.model.LifestyleResponse;
-import com.jonesyong.library_common.model.NowResponse;
-import com.jonesyong.library_common.model.WarmNowCityListResponse;
-import com.jonesyong.library_common.model.WarmNowResponse;
+import com.jonesyong.library_common.utils.CommonUtil;
 import com.jonesyong.module_home.databinding.ActivityWeatherBinding;
-import com.jonesyong.module_home.interfaces.WeatherDataCallback;
-import com.jonesyong.module_home.presenter.WeatherPresenter;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 @Route(path = Router.MODULE_HOME_WEATHER_ACTIVITY)
-public class WeatherActivity extends BaseActivity implements WeatherDataCallback {
+public class WeatherActivity extends BaseActivity {
 
     private static final String TAG = "WeatherActivity";
 
-
-    private ScrollView weatherLayout;
-
     // 这是 id 是用来获取提拉起数据的 id，定位时用的是经度纬度，城市搜索时用的是 locationId
-    private String locationId;
-    private String cityName;
-    // 整个的定位数据
-    private AMapLocation aMapLocation;
-
-    public TextView degreeText, weatherInfoText;
-
-
+    @Autowired
+    String locationId;
+    @Autowired
+    String cityName;
     //更新天气控件
     public SwipeRefreshLayout swipeRefreshLayout;
-
-    //滑动菜单
     private ImageView navMap;
-
-    // 线程切换的Handler
-    private WeatherHandler mWeatherHandler = new WeatherHandler(this);
-
     // 加载必应背景图
     public LinearLayout mLinearLayout;
+    public TextView titleCity;
     // 天气展示数据的 Presenter
     private WeatherPresenter mWeatherPresenter;
     private ActivityWeatherBinding mActivityWeatherBinding;
-
-    /**
-     * 持有的数据实体
-     */
+    // 各个模块的数据view
+    public TextView degreeText, weatherInfoText;
     public TextView mWinDirection;
     public TextView mHumidity;
     public TextView mAirPressure;
@@ -84,8 +61,6 @@ public class WeatherActivity extends BaseActivity implements WeatherDataCallback
     public TextView mTvPm25;
     public LinearLayout mLlSuggestion;
     private LinearLayout mMoreLifeSuggestion;
-    public TextView titleCity;
-    private ImageView mLoadingView;
 
 
     @SuppressLint("LongLogTag")
@@ -93,7 +68,6 @@ public class WeatherActivity extends BaseActivity implements WeatherDataCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mActivityWeatherBinding = DataBindingUtil.setContentView(this, R.layout.activity_weather);
-
         // 注册事件总线,用于接收在 MyApplication 获得的定位数据
         EventBus.getDefault().register(this);
         initView();
@@ -104,10 +78,7 @@ public class WeatherActivity extends BaseActivity implements WeatherDataCallback
      * 初始化事件
      */
     private void initEvent() {
-        mWeatherPresenter = WeatherPresenter.getInstance();
-        // 注册
-        mWeatherPresenter.setWeatherDataCallback(this);
-
+        mWeatherPresenter = new WeatherPresenter(this);
         // 获取数据
         getWeatherData();
 
@@ -115,8 +86,8 @@ public class WeatherActivity extends BaseActivity implements WeatherDataCallback
         navMap.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                locationId = aMapLocation.getLongitude() + "," + aMapLocation.getLatitude();
-                cityName = aMapLocation.getDistrict();
+                locationId = CommonUtil.getLocationIdFromCache(getApplicationContext());
+                cityName = CommonUtil.getCityNameFromCache(getApplicationContext());
                 getWeatherData();
             }
         });
@@ -143,12 +114,10 @@ public class WeatherActivity extends BaseActivity implements WeatherDataCallback
         mActivityWeatherBinding.includeTitle.ivMoreChoose.setOnClickListener((view) -> {
             ARouterUtils.navigationToSearch();
         });
-
         // 更多生活建议
         mMoreLifeSuggestion.setOnClickListener(v -> {
-            Log.d(TAG, this.locationId);
             ARouter.getInstance().build(Router.MODULE_DETAIL_DETAIL_ACTIVITY)
-                    .withString("location",this.locationId)
+                    .withString("location", this.locationId)
                     .withString("cityName", this.cityName)
                     .navigation();
         });
@@ -165,26 +134,17 @@ public class WeatherActivity extends BaseActivity implements WeatherDataCallback
      */
     private void getWeatherData() {
         // 背景图片
-        mWeatherPresenter.requestBackgroundImage();
+        mWeatherPresenter.getBackgroundImage();
         // 实时天气数据
-        mWeatherPresenter.requestNowWeatherData(locationId);
+        mWeatherPresenter.getNowWeatherInfo(locationId);
         // 天气预报
-        mWeatherPresenter.requestForecast3DayData(locationId);
+        mWeatherPresenter.getForecastInfo(locationId);
         // 空气质量
-        mWeatherPresenter.requestAirConditionData(locationId);
+        mWeatherPresenter.getAirQualityInfo(locationId);
         // 生活指数
-        mWeatherPresenter.requestLifeConditionData(locationId);
-
-        Toast.makeText(this, "数据更新成功", Toast.LENGTH_SHORT).show();
-
+        mWeatherPresenter.getSuggestionInfo(locationId);
         // 设置名称
         titleCity.setText(cityName);
-
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
     }
 
     /**
@@ -193,43 +153,28 @@ public class WeatherActivity extends BaseActivity implements WeatherDataCallback
     private void initView() {
         // 获取这个页面中的最外面的布局
         mLinearLayout = findViewById(R.id.ll_weather);
-
-
         //地图搜索功能
-        navMap = (ImageView) findViewById(R.id.nav_button);
-
+        navMap = findViewById(R.id.nav_button);
         // 界面最上方的城市名称
         titleCity = mActivityWeatherBinding.includeTitle.titleCity;
-
-        // 滑动布局
-        weatherLayout = (ScrollView) findViewById(R.id.weather_layout);
-
-        /**
-         * 初始化视图控件
-         * */
+        //更新天气的处理逻辑
+        swipeRefreshLayout = findViewById(R.id.swipe_refresh);
+        swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
         //实时天气数据
-        degreeText = (TextView) findViewById(R.id.degree_text);
-        weatherInfoText = (TextView) findViewById(R.id.weather_info_text);
+        degreeText = findViewById(R.id.degree_text);
+        weatherInfoText = findViewById(R.id.weather_info_text);
         mWinDirection = findViewById(R.id.tv_win_Info);
         mHumidity = findViewById(R.id.tv_humidity_Info);
         mAirPressure = findViewById(R.id.tv_air_pressure_Info);
         mUpdateTime = findViewById(R.id.tv_updateTime);
-
         // 天气预报
         mForecastWeatherContainer = findViewById(R.id.ll_forecast_container);
-
         // 生活质量,这里只有 aqi 和 pm2.5
         mTvAqi = findViewById(R.id.tv_api);
         mTvPm25 = findViewById(R.id.tv_pm25);
-
         // 生活建议的布局
         mLlSuggestion = findViewById(R.id.ll_suggestion_container);
-        mMoreLifeSuggestion = mActivityWeatherBinding.includeSuggestion.llMoreWeatherSuggestion;
-
-
-        //更新天气的处理逻辑
-        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh);
-        swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
+        mMoreLifeSuggestion = findViewById(R.id.ll_more_weather_suggestion);
     }
 
 
@@ -240,103 +185,38 @@ public class WeatherActivity extends BaseActivity implements WeatherDataCallback
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void postSearchCityData(SearchCityEvent event) {
-        this.cityName = event.getLocationBean().getName();
-        this.locationId = event.getLocationBean().getId();
-    }
-
-    /**
-     * 实时天气数据查询的
-     *
-     * @param nowResponse
-     */
-    @Override
-    public void nowWeatherDataCallback(NowResponse nowResponse) {
-        Message message = mWeatherHandler.obtainMessage();
-        message.what = Constants.POST_NOW_WEATHER_DATA;
-        message.obj = nowResponse;
-        mWeatherHandler.sendMessage(message);
-    }
-
-    /**
-     * 生活建议的数据回调
-     *
-     * @param lifestyleResponse
-     */
-    @Override
-    public void lifeConditionDataCallback(LifestyleResponse lifestyleResponse) {
-        Message message = mWeatherHandler.obtainMessage();
-        message.what = Constants.POST_LIFE_SUGGESTION;
-        message.obj = lifestyleResponse;
-        mWeatherHandler.sendMessage(message);
-    }
-
-    /**
-     * 空气质量数据处理
-     *
-     * @param airNowConditionResponse
-     */
-    @Override
-    public void airConditionDataCallback(AirNowConditionResponse airNowConditionResponse) {
-        Message message = mWeatherHandler.obtainMessage();
-        message.what = Constants.POST_AIR_CONDITION_DATA;
-        message.obj = airNowConditionResponse;
-        mWeatherHandler.sendMessage(message);
-    }
-
-    /**
-     * 天气预报相关的
-     *
-     * @param dailyResponse
-     */
-    @Override
-    public void weatherForecastDataCallback(DailyResponse dailyResponse) {
-        Message message = mWeatherHandler.obtainMessage();
-        message.what = Constants.POST_FORECAST_WEATHER_DATA;
-        message.obj = dailyResponse;
-        mWeatherHandler.sendMessage(message);
-    }
-
-    @Override
-    public void warmNowDataCallback(WarmNowResponse warmNowResponse) {
-
-    }
-
-    @Override
-    public void warmNowCityListDataCallback(WarmNowCityListResponse warmNowCityListResponse) {
-
+        this.cityName = event.getLocationModel().getName();
+        this.locationId = event.getLocationModel().getId();
     }
 
     /**
      * 背景图片的处理
      *
-     * @param url
+     * @param url 图片完整的 url
      */
-    @Override
     public void loadImageUrlDataCallback(String url) {
-        Message message = mWeatherHandler.obtainMessage();
-        message.what = Constants.POST_BACKGROUND_IMAGE;
-        message.obj = url;
-        mWeatherHandler.sendMessage(message);
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
-    public void onMessageEvent(LocationEventMessage event) {
-        this.aMapLocation = event.getAMapLocation();
-        this.cityName = event.getAMapLocation().getDistrict();
-        this.locationId = event.getAMapLocation().getLongitude() + "," + event.getAMapLocation().getLatitude();
+        // 设置背景图片
+        Glide.with(this)
+                .asBitmap()
+                .load(url)
+                .into(new SimpleTarget<Bitmap>() {
+                    @Override
+                    public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
+                        Drawable drawable = new BitmapDrawable(resource);
+                        mLinearLayout.setBackground(drawable);
+                    }
+                });
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onHotCityMessageEvent(HotCityEventMessage event) {
-        this.locationId = event.getHotCityResponse().getTopCityList().get(event.getIndex()).getId();
-        this.cityName = event.getHotCityResponse().getTopCityList().get(event.getIndex()).getName();
+        this.locationId = event.getHotCityListModel().getId();
+        this.cityName = event.getHotCityListModel().getName();
     }
 
     @Override
     protected void onDestroy() {
-        EventBus.getDefault().removeStickyEvent(LocationEventMessage.class);
         EventBus.getDefault().unregister(this);
         super.onDestroy();
     }
-
 }

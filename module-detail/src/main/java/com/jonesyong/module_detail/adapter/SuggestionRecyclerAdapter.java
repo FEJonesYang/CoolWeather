@@ -8,14 +8,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.alibaba.mit.alitts.CommonUtils;
-import com.jonesyong.library_common.model.LifestyleResponse;
+import com.jonesyong.library_common.model.DailyModel;
 import com.jonesyong.library_common.utils.CommonUtil;
 import com.jonesyong.module_detail.R;
 
-import org.w3c.dom.Text;
-
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,9 +21,9 @@ import java.util.List;
  */
 public class SuggestionRecyclerAdapter extends RecyclerView.Adapter<SuggestionRecyclerAdapter.ViewHolder> {
 
-    List<LifestyleResponse.DailyBean> mDailyBeans;
+    List<DailyModel> mDailyBeans;
 
-    public SuggestionRecyclerAdapter(List<LifestyleResponse.DailyBean> daily) {
+    public SuggestionRecyclerAdapter(List<DailyModel> daily) {
         this.mDailyBeans = daily;
     }
 
@@ -46,7 +42,10 @@ public class SuggestionRecyclerAdapter extends RecyclerView.Adapter<SuggestionRe
 
     @Override
     public int getItemCount() {
-        return mDailyBeans.size();
+        if (mDailyBeans != null) {
+            return mDailyBeans.size();
+        }
+        return 0;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -62,7 +61,7 @@ public class SuggestionRecyclerAdapter extends RecyclerView.Adapter<SuggestionRe
             mSuggestionContent = itemView.findViewById(R.id.tv_suggestion_text);
         }
 
-        public void refreshData(LifestyleResponse.DailyBean dailyBean) {
+        public void refreshData(DailyModel dailyBean) {
             if (dailyBean == null) {
                 return;
             }

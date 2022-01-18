@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.jonesyong.module_search">
 
-    <application android:theme="@style/AppTheme">
+    <application>
 
         <!-- 搜索城市 -->
         <activity

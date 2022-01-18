@@ -49,18 +49,6 @@ public class Constants {
             "新疆维吾尔自治区"
     };
 
-    /**
-     * 线程切换相关的 what 标志
-     */
-    public static final int POST_BACKGROUND_IMAGE = 1;
-    public static final int POST_NOW_WEATHER_DATA = 2;
-    public static final int POST_FORECAST_WEATHER_DATA = 3;
-    public static final int POST_AIR_CONDITION_DATA = 4;
-    public static final int POST_LIFE_SUGGESTION = 5;
-    // 处理城市搜索数据时，进行线程切换的标志
-    public static final int POST_SEARCH_CITY_DATA = 1;
-    public static final int POST_HOT_CITY_DATA = 2;
-
     // 是否 DEBUG
     public static final boolean isDebug = true;
 }

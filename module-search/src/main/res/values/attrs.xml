@@ -5,6 +5,5 @@
         <attr name="horizontal_spacing" format="dimension" />
         <attr name="vertical_spacing" format="dimension" />
     </declare-styleable>
-    <declare-styleable name="HotCitFlowLayout">aaaa</declare-styleable>
 
 </resources>

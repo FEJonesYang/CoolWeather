@@ -1,7 +1,7 @@
 package com.jonesyong.library_common.message;
 
 
-import com.jonesyong.library_common.model.HotCityResponse;
+import com.jonesyong.library_common.model.HotCityListModel;
 
 /**
  * @Author: JonesYang
@@ -10,32 +10,13 @@ import com.jonesyong.library_common.model.HotCityResponse;
  */
 public class HotCityEventMessage {
 
-    private HotCityResponse hotCityResponse;
+    private HotCityListModel mHotCityListModel;
 
-    // 点击的是哪一个item
-    private int index;
-
-    public HotCityEventMessage() {
+    public HotCityEventMessage(HotCityListModel hotCityListModel) {
+        this.mHotCityListModel = hotCityListModel;
     }
 
-    public HotCityEventMessage(HotCityResponse hotCityResponse, int index) {
-        this.hotCityResponse = hotCityResponse;
-        this.index = index;
-    }
-
-    public HotCityResponse getHotCityResponse() {
-        return hotCityResponse;
-    }
-
-    public void setHotCityResponse(HotCityResponse hotCityResponse) {
-        this.hotCityResponse = hotCityResponse;
-    }
-
-    public int getIndex() {
-        return index;
-    }
-
-    public void setIndex(int index) {
-        this.index = index;
+    public HotCityListModel getHotCityListModel() {
+        return mHotCityListModel;
     }
 }

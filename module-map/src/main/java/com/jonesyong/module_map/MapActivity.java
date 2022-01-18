@@ -1,18 +1,10 @@
 package com.jonesyong.module_map;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
-import android.graphics.Color;
 import android.location.Location;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
+
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -21,30 +13,24 @@ import com.amap.api.maps.AMap;
 import com.amap.api.maps.MapView;
 import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.MyLocationStyle;
+import com.jonesyong.library_common.base.BaseActivity;
 import com.jonesyong.library_common.base.Router;
-import com.jonesyong.library_common.model.NowResponse;
+import com.jonesyong.library_common.model.LocationModel;
+import com.jonesyong.library_common.model.NowModel;
+import com.jonesyong.library_common.model.Response;
 
-import org.jetbrains.annotations.NotNull;
-
-import java.lang.ref.WeakReference;
 
 @Route(path = Router.MODULE_MAP_MAP_ACTIVITY)
-public class MapActivity extends AppCompatActivity implements AMap.OnMyLocationChangeListener, AMap.OnMapClickListener, MapWeatherPresenter.ISendMapWeatherListener {
+public class MapActivity extends BaseActivity implements AMap.OnMyLocationChangeListener, AMap.OnMapClickListener {
 
     /// 地图相关的
     private static final String TAG = "MapActivity";
     MapView mMapView = null;
     AMap aMap = null;
-
     // 天气信息的,这里用的是经度纬度信息
     private String weatherId;
-    // 线程切换的handler
-    private MapWeatherHandler mapWeatherHandler = new MapWeatherHandler(this);
-    private static final int POST_MAP_WEATHER_DATA = 1;
-    private static final int POST_CITY_NAME = 2;
 
-    private NowResponse nowResponse;
-    private MapWeatherPresenter mapWeatherPresenter;
+    private MapWeatherPresenter mapWeatherPresenter = new MapWeatherPresenter(this);
 
     // 视图
     private TextView cityName;
@@ -56,24 +42,13 @@ public class MapActivity extends AppCompatActivity implements AMap.OnMyLocationC
     private TextView windDir;
     private TextView humidity;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // 5.0以上系统状态栏透明
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Window window = getWindow();
-            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                    | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setStatusBarColor(Color.TRANSPARENT);
-        }
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
 
         //获取地图控件引用
-        mMapView = (MapView) findViewById(R.id.map);
+        mMapView = findViewById(R.id.map);
         //在activity执行onCreate时执行mMapView.onCreate(savedInstanceState)，创建地图
         mMapView.onCreate(savedInstanceState);
         //初始化地图控制器对象
@@ -83,19 +58,11 @@ public class MapActivity extends AppCompatActivity implements AMap.OnMyLocationC
 
         // 展示地图蓝色的点
         showBluePoint();
-
         // 定位时获取位置
         aMap.setOnMyLocationChangeListener(this);
-
         // 设置手势点击，获取点击的位置信息
         aMap.setOnMapClickListener(this);
-
-        // 数据回调
-        mapWeatherPresenter = new MapWeatherPresenter();
-        mapWeatherPresenter.setMapWeatherListener(this);
-
         initView();
-
     }
 
     /**
@@ -117,8 +84,8 @@ public class MapActivity extends AppCompatActivity implements AMap.OnMyLocationC
      * 请求数据
      */
     private void changeData() {
-        mapWeatherPresenter.requestNowWeatherData(weatherId);
-        mapWeatherPresenter.queryLocationCity(weatherId);
+        mapWeatherPresenter.getCityInfo(weatherId);
+        mapWeatherPresenter.getNowWeatherInfo(weatherId);
     }
 
 
@@ -183,36 +150,13 @@ public class MapActivity extends AppCompatActivity implements AMap.OnMyLocationC
     }
 
     /**
-     * 需要考虑线程切换的问题
-     *
-     * @param nowResponse
-     */
-    @Override
-    public void postMapWeatherData(NowResponse nowResponse) {
-        Message message = mapWeatherHandler.obtainMessage();
-        message.what = POST_MAP_WEATHER_DATA;
-        message.obj = nowResponse;
-        mapWeatherHandler.sendMessage(message);
-    }
-
-    /**
-     * @param name 城市名称
-     */
-    @Override
-    public void postCityName(String name) {
-        Message message = mapWeatherHandler.obtainMessage();
-        message.what = 2;
-        message.obj = name;
-        mapWeatherHandler.sendMessage(message);
-    }
-
-    /**
      * 改变 UI ，展示天气的数据
      *
-     * @param nowResponse
+     * @param response base response
      */
-    private void handleWeatherInfo(NowResponse nowResponse) {
-        NowResponse.NowBean nowBean = nowResponse.getNow();
+    @SuppressLint("SetTextI18n")
+    public void handleWeatherInfo(Response response) {
+        NowModel nowBean = response.getNow();
         if (nowBean != null) {
             cityTemperature.setText(nowBean.getTemp() + "℃");
             weatherStatus.setText(nowBean.getText());
@@ -220,45 +164,18 @@ public class MapActivity extends AppCompatActivity implements AMap.OnMyLocationC
             pressure.setText("气压: " + nowBean.getPressure());
             windDir.setText("风向: " + nowBean.getWindDir());
             humidity.setText("湿度: " + nowBean.getHumidity());
-
-            // 设置图片
-            String imgUrl = "R.drawable.icon_" + nowBean.getIcon() + ".png";
-            int resID = getResources().getIdentifier(imgUrl, "drawable", getPackageName());
-            weatherStatusIcon.setImageResource(resID);
         }
     }
 
     /**
      * 处理城市的名称
      *
-     * @param name
+     * @param response base response
      */
-    private void handleCityName(String name) {
-        if (name != null) {
-            cityName.setText(name);
-        }
-    }
-
-    private static class MapWeatherHandler extends Handler {
-        private WeakReference<MapActivity> mapActivityWeakReference;
-
-        public MapWeatherHandler(MapActivity activity) {
-            mapActivityWeakReference = new WeakReference<>(activity);
-        }
-
-        @Override
-        public void handleMessage(@NonNull @NotNull Message msg) {
-            super.handleMessage(msg);
-            switch (msg.what) {
-                // 处理天气信息的展示
-                case POST_MAP_WEATHER_DATA:
-                    mapActivityWeakReference.get().handleWeatherInfo((NowResponse) msg.obj);
-                    break;
-                //城市名称
-                case POST_CITY_NAME:
-                    mapActivityWeakReference.get().handleCityName((String) msg.obj);
-                    break;
-            }
+    public void handleCityName(Response response) {
+        LocationModel model = response.getLocation().get(0);
+        if (model != null) {
+            cityName.setText(model.getName());
         }
     }
 }

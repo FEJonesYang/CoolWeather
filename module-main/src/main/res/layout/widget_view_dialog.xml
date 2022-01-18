@@ -26,7 +26,7 @@
             android:layout_marginStart="10dp"
             android:gravity="center"
             android:text="权限申请"
-            android:textColor="@color/common_black"
+            android:textColor="@color/black"
             android:textSize="18sp" />
 
     </LinearLayout>
@@ -37,7 +37,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:text="请求使用定位权限"
-        android:textColor="@color/common_black" />
+        android:textColor="@color/black" />
 
     <!--  bottom button  -->
     <LinearLayout
@@ -54,7 +54,7 @@
             android:layout_weight="1"
             android:background="@drawable/shape_bg_button"
             android:text="取消"
-            android:textColor="@color/common_black" />
+            android:textColor="@color/black" />
 
         <Button
             android:id="@+id/btn_sure"
@@ -64,7 +64,7 @@
             android:layout_weight="1"
             android:background="@drawable/shape_bg_button"
             android:text="确定"
-            android:textColor="@color/common_black" />
+            android:textColor="@color/black" />
 
     </LinearLayout>
 

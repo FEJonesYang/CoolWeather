@@ -7,14 +7,9 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.Dialog;
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -26,7 +21,7 @@ import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
 import com.jonesyong.library_common.base.Router;
-import com.jonesyong.library_common.message.LocationEventMessage;
+import com.jonesyong.library_common.utils.CommonUtil;
 import com.jonesyong.library_common.utils.UIUtil;
 
 import org.greenrobot.eventbus.EventBus;
@@ -42,19 +37,14 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     private static int RequestPermissionCode = 1;
 
-    //声明AMapLocationClient类对象
-    private AMapLocationClient mLocationClient;
 
+    //声明AMapLocationClient类对象
+    private static AMapLocationClient mLocationClient;
     //声明定位回调监听器
-    private AMapLocationListener mLocationListener;
+    private static AMapLocationListener mLocationListener;
 
     //声明AMapLocationClientOption对象--AMapLocationClientOption对象用来设置发起定位的模式和相关参数。
-    private AMapLocationClientOption mLocationOption = new AMapLocationClientOption();
-
-    //通知相关的
-    private static final String NOTIFICATION_CHANNEL_NAME = "BackgroundLocation";
-    private NotificationManager notificationManager = null;
-    boolean isCreateChannel = false;
+    private static AMapLocationClientOption mLocationOption = new AMapLocationClientOption();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,11 +53,14 @@ public class MainActivity extends AppCompatActivity {
         int hasPermission = ContextCompat.checkSelfPermission(getApplication(), Manifest.permission.ACCESS_FINE_LOCATION);
         if (hasPermission == PackageManager.PERMISSION_GRANTED) {
             //已获取权限
-            UIUtil.showShortToast(this, "定位权限已获取");
             getLocationAfterPermissionSuccess();
         } else {
             //未获取权限，需要弹出 dialog，这里自定义 View
             initDialogView();
+        }
+        // 启动服务获取定位
+        if (hasPermission == PackageManager.PERMISSION_GRANTED) {
+            new Thread(this::startLocationService).start();
         }
     }
 
@@ -93,7 +86,6 @@ public class MainActivity extends AppCompatActivity {
         });
         view.findViewById(R.id.btn_sure).setOnClickListener(v -> {
             dialog.dismiss();
-            UIUtil.showShortToast(this, "定位权限申请中");
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, RequestPermissionCode);
         });
@@ -119,11 +111,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getLocationAfterPermissionSuccess() {
+        // 从缓存中获取定位参数，如果不存在的话从Service请求
+        String locationId = CommonUtil.getLocationIdFromCache(this);
+        String cityName = CommonUtil.getCityNameFromCache(this);
+        if (CommonUtil.isStringValid(locationId) && CommonUtil.isStringValid(cityName)) {
+            ARouter.getInstance().build(Router.MODULE_HOME_WEATHER_ACTIVITY)
+                    .withString("locationId", locationId)
+                    .withString("cityName", cityName)
+                    .navigation();
+            finish();
+        }
         mLocationClient = new AMapLocationClient(getApplicationContext());
-
-        /**
-         * 设置定位场景，目前支持三种场景（签到、出行、运动，默认无场景）
-         */
+        // 设置定位场景，目前支持三种场景（签到、出行、运动，默认无场景）
         mLocationOption.setLocationPurpose(AMapLocationClientOption.AMapLocationPurpose.SignIn);
         if (null != mLocationClient) {
             mLocationClient.setLocationOption(mLocationOption);
@@ -131,17 +130,16 @@ public class MainActivity extends AppCompatActivity {
             mLocationClient.stopLocation();
             mLocationClient.startLocation();
         }
-
         //设置定位模式为AMapLocationMode.Hight_Accuracy，高精度模式。
         mLocationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
         mLocationListener = (location) -> {
-
             if (location != null) {
                 if (location.getErrorCode() == 0) {
                     //发送粘性事件
-                    LocationEventMessage locationEventMessage = new LocationEventMessage(location);
-                    EventBus.getDefault().postSticky(locationEventMessage);
-                    ARouter.getInstance().build(Router.MODULE_HOME_WEATHER_ACTIVITY).navigation();
+                    ARouter.getInstance().build(Router.MODULE_HOME_WEATHER_ACTIVITY)
+                            .withString("locationId", location.getLongitude() + "," + location.getLatitude())
+                            .withString("cityName", location.getDistrict())
+                            .navigation();
                     finish();
                 } else {
                     //定位失败时，可通过ErrCode（错误码）信息来确定失败的原因，errInfo是错误信息，详见错误码表。
@@ -152,52 +150,14 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         };
-
-
         //给定位客户端对象设置定位参数
         mLocationClient.setLocationOption(mLocationOption);
         //启动定位
         mLocationClient.startLocation();
         mLocationClient.setLocationListener(mLocationListener);
-
-        //启动后台定位，第一个参数为通知栏ID，建议整个APP使用一个
-        mLocationClient.enableBackgroundLocation(2001, buildNotification());
     }
 
-    /**
-     * 通知
-     *
-     * @return
-     */
-    @SuppressLint("NewApi")
-    private Notification buildNotification() {
-        Notification.Builder builder = null;
-        Notification notification = null;
-        if (android.os.Build.VERSION.SDK_INT >= 26) {
-            //Android O上对Notification进行了修改，如果设置的targetSDKVersion>=26建议使用此种方式创建通知栏
-            if (null == notificationManager) {
-                notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            }
-            String channelId = getPackageName();
-            if (!isCreateChannel) {
-                NotificationChannel notificationChannel = new NotificationChannel(channelId,
-                        NOTIFICATION_CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
-                notificationChannel.enableLights(true);//是否在桌面icon右上角展示小圆点
-                notificationChannel.setLightColor(Color.BLUE); //小圆点颜色
-                notificationChannel.setShowBadge(true); //是否在久按桌面图标时显示此渠道的通知
-                notificationManager.createNotificationChannel(notificationChannel);
-                isCreateChannel = true;
-            }
-            builder = new Notification.Builder(getApplicationContext(), channelId);
-        } else {
-            builder = new Notification.Builder(getApplicationContext());
-        }
-        builder.setSmallIcon(R.mipmap.ic_launcher)
-                .setContentTitle(getPackageName())
-                .setContentText("正在后台运行")
-                .setWhen(System.currentTimeMillis());
-        notification = builder.build();
-        return notification;
+    private void startLocationService() {
+        startService(new Intent(getApplicationContext(), LocationService.class));
     }
-
 }

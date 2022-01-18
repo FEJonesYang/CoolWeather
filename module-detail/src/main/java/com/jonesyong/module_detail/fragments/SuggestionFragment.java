@@ -1,8 +1,6 @@
 package com.jonesyong.module_detail.fragments;
 
-import android.app.Activity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.jonesyong.library_common.base.BaseFragment;
-import com.jonesyong.library_common.model.LifestyleResponse;
+import com.jonesyong.library_common.model.Response;
 import com.jonesyong.module_detail.R;
 import com.jonesyong.module_detail.adapter.SuggestionRecyclerAdapter;
 import com.jonesyong.module_detail.presenters.SuggestionPresenter;
@@ -65,9 +63,9 @@ public class SuggestionFragment extends BaseFragment {
         mCityNameView.setText(cityName);
     }
 
-    public void initData(@io.reactivex.rxjava3.annotations.NonNull LifestyleResponse lifestyleResponse) {
+    public void initData(Response response) {
         mSuggestionRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        mAdapter = new SuggestionRecyclerAdapter(lifestyleResponse.getDaily());
+        mAdapter = new SuggestionRecyclerAdapter(response.getDaily());
         mSuggestionRecyclerView.setAdapter(mAdapter);
     }
 

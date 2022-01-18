@@ -1,6 +1,6 @@
 package com.jonesyong.library_common.message;
 
-import com.jonesyong.library_common.model.SearchCityBean;
+import com.jonesyong.library_common.model.LocationModel;
 
 /**
  * @Author JonesYang
@@ -9,13 +9,13 @@ import com.jonesyong.library_common.model.SearchCityBean;
  */
 public class SearchCityEvent {
 
-    private SearchCityBean.LocationBean locationBean;
+    private final LocationModel mLocationModel;
 
-    public SearchCityEvent(SearchCityBean.LocationBean locationBean) {
-        this.locationBean = locationBean;
+    public SearchCityEvent(LocationModel location) {
+        this.mLocationModel  = location;
     }
 
-    public SearchCityBean.LocationBean getLocationBean() {
-        return locationBean;
+    public LocationModel getLocationModel() {
+        return mLocationModel;
     }
 }

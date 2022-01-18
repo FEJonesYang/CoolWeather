@@ -1,21 +1,17 @@
 package com.jonesyong.module_map;
 
-import android.annotation.SuppressLint;
+
 import android.util.Log;
 
-import com.jonesyong.library_common.json.Utility;
-import com.jonesyong.library_common.net.Api;
+import com.jonesyong.library_common.model.Response;
 import com.jonesyong.library_common.net.HttpUtil;
-import com.jonesyong.library_common.model.NowResponse;
-import com.jonesyong.library_common.model.SearchCityBean;
 
-import org.jetbrains.annotations.NotNull;
-
-import java.io.IOException;
-
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Response;
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.annotations.NonNull;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.Observer;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 /**
  * @Author JonesYang
@@ -24,55 +20,74 @@ import okhttp3.Response;
  */
 public class MapWeatherPresenter {
     private static final String TAG = "MapWeatherPresenter";
+    MapActivity mMapActivity;
 
-    public MapWeatherPresenter() {
+    public MapWeatherPresenter(MapActivity mapActivity) {
+        this.mMapActivity = mapActivity;
     }
 
     /**
-     * 发起请求当前天气数据的
+     * 获取当前位置的天气数据
+     *
+     * @param location location
      */
-    public void requestNowWeatherData(String locationId) {
-        HttpUtil.sendOkHttpRequest(Api.weatherNow + locationId, new Callback() {
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                Log.e(TAG, "获取当前的天气信息失败---> " + e.getMessage());
-            }
+    public void getNowWeatherInfo(String location) {
+        Observable<Response> observable = HttpUtil.getDevService().getNowDailyInfo(location);
+        observable.observeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<Response>() {
+                    @Override
+                    public void onSubscribe(@NonNull Disposable d) {
 
-            @SuppressLint("LongLogTag")
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                NowResponse nowResponse = Utility.getGsonInstance().fromJson(response.body().string(), NowResponse.class);
-                mapWeatherListener.postMapWeatherData(nowResponse);
-            }
-        });
+                    }
+
+                    @Override
+                    public void onNext(@NonNull Response response) {
+                        mMapActivity.handleWeatherInfo(response);
+                    }
+
+                    @Override
+                    public void onError(@NonNull Throwable e) {
+                        Log.e(TAG, e.toString());
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
     }
 
-    // 查询城市,在这里需要根据经度纬度信息得到城市的信息
-    public void queryLocationCity(String location) {
-        HttpUtil.sendOkHttpRequest(Api.queryCity + location, new Callback() {
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                Log.e(TAG, e.getMessage());
-            }
 
-            @SuppressLint("LongLogTag")
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                SearchCityBean searchCityBean = Utility.getGsonInstance().fromJson(response.body().string(), SearchCityBean.class);
-                mapWeatherListener.postCityName(searchCityBean.getLocation().get(0).getName());
-            }
-        });
-    }
+    /**
+     * 获取城市信息
+     *
+     * @param location location
+     */
+    public void getCityInfo(String location) {
+        Observable<Response> observable = HttpUtil.getGeoService().getCityInfo(location);
+        observable.observeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<Response>() {
+                    @Override
+                    public void onSubscribe(@NonNull Disposable d) {
 
-    public void setMapWeatherListener(ISendMapWeatherListener mapWeatherListener) {
-        this.mapWeatherListener = mapWeatherListener;
-    }
+                    }
 
-    public ISendMapWeatherListener mapWeatherListener;
+                    @Override
+                    public void onNext(@NonNull Response response) {
+                        mMapActivity.handleCityName(response);
+                    }
 
-    public interface ISendMapWeatherListener {
-        void postMapWeatherData(NowResponse nowResponse);
+                    @Override
+                    public void onError(@NonNull Throwable e) {
+                        Log.e(TAG, e.toString());
+                    }
 
-        void postCityName(String name);
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
     }
 }

@@ -43,29 +43,6 @@
             android:layout_marginBottom="20dp"
             android:orientation="vertical" />
 
-        <LinearLayout
-            android:id="@+id/ll_error_empty_container"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:visibility="gone">
-
-            <ImageView
-                android:id="@+id/iv_error_empty"
-                android:layout_width="150dp"
-                android:layout_height="150dp"
-                android:src="@mipmap/icon_error_view" />
-
-            <Button
-                android:id="@+id/bt_retry"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="点击重试" />
-
-        </LinearLayout>
-
-
         <!--    热门城市    -->
         <TextView
             android:id="@+id/tv_showHotCity"

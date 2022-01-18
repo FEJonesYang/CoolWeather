@@ -6,12 +6,10 @@
     <application
         android:name="com.jonesyong.library_common.base.BaseApplication"
         android:allowBackup="false"
-        android:icon="@mipmap/logo"
+        android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        android:usesCleartextTraffic="true"
-        tools:ignore="GoogleAppIndexingWarning"
-        tools:replace="android:name"/>
+        android:usesCleartextTraffic="true"/>
 
 </manifest>
